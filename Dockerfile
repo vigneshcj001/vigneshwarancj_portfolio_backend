@@ -1,22 +1,21 @@
-# my_portfolio_backend/Dockerfile
-FROM python:3.13-slim
+# Dockerfile – FastAPI backend
+FROM python:3.11-slim
 
-# Set workdir inside container
 WORKDIR /app
 
-# Install system dependencies (optional, curl is handy for debugging)
+# Install system tools (optional)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
  && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
+# Install Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your backend code
+# Copy app code
 COPY . .
 
-# Expose FastAPI port
+# Expose backend port
 EXPOSE 8000
 
 # Start FastAPI with uvicorn
