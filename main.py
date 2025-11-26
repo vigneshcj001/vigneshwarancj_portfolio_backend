@@ -8,15 +8,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FRONTEND = os.getenv("FRONTEND_ORIGIN", "http://127.0.0.1:1234")
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11501")
+# Frontend (your Vercel URL)
+FRONTEND = os.getenv(
+    "FRONTEND_ORIGIN",
+    "https://vigneshwarancj-portfolio-website.vercel.app",
+)
+
+# Ollama config
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "deepseek-r1:1.5b")
 
 app = FastAPI(title="Vigneshwaran Portfolio AI Assistant")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND, "http://localhost:1234", "http://127.0.0.1:1234"],
+    allow_origins=[FRONTEND],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,7 +34,7 @@ class Message(BaseModel):
 
 
 def clean_reply(raw: str) -> str:
-    """Remove DeepSeek reasoning, Answer:, undefined, and junk."""
+    """Remove DeepSeek reasoning, 'Answer:', 'undefined', and junk."""
     if not raw:
         return ""
 
@@ -37,16 +43,16 @@ def clean_reply(raw: str) -> str:
     # Remove <think>...</think> blocks
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
 
-    # Remove lines starting with think>
+    # Remove lines starting with "think>"
     text = re.sub(r"^\s*think>.*?$", "", text, flags=re.MULTILINE | re.IGNORECASE)
 
     # Remove leading "Answer:" prefix if present
     text = re.sub(r"^\s*Answer:\s*", "", text, flags=re.IGNORECASE)
 
-    # Remove any standalone 'undefined'
+    # Remove standalone 'undefined'
     text = re.sub(r"\bundefined\b", "", text, flags=re.IGNORECASE)
 
-    # Collapse excessive blank lines and trim
+    # Cleanup whitespace
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
 
     return text
@@ -94,7 +100,7 @@ def assistant(msg: Message):
     if not user_msg:
         raise HTTPException(status_code=400, detail="Message must not be empty")
 
-    # Local debug shortcut
+    # Local debug mode
     if user_msg.lower().startswith("local-test"):
         return {"reply": "Local backend OK — no AI call made."}
 
