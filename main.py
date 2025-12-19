@@ -52,6 +52,15 @@ class AssistantResponse(BaseModel):
     reply: str
 
 # -----------------------------
+# Load portfolio data
+# -----------------------------
+with open("portfolio_data.json") as f:
+    portfolio_data = f.read()
+
+# Escape curly braces in JSON to prevent LC template errors
+portfolio_data = portfolio_data.replace("{", "{{").replace("}", "}}")
+
+# -----------------------------
 # LLM Setup (Groq)
 # -----------------------------
 llm = ChatGroq(
@@ -60,12 +69,8 @@ llm = ChatGroq(
     temperature=0.3,
     max_tokens=1024,
 )
-with open("portfolio_data.json") as f:
-    portfolio_data = f.read()
 
-
-
-SYSTEM_PROMPT= """
+SYSTEM_PROMPT = f"""
 You are Vigneshwaran CJ’s AI Portfolio Assistant.
 
 Your primary objective is to represent Vigneshwaran CJ accurately, professionally, and confidently to visitors of his portfolio website.
@@ -107,9 +112,6 @@ INFORMATION BOUNDARIES
   → Clearly state that the information is not available
   → Optionally suggest contacting Vigneshwaran CJ directly for clarification
 
-Example:
-"I do not currently have information on that topic. For accurate details, please contact Vigneshwaran CJ directly."
-
 ====================
 BEHAVIORAL GUIDELINES
 ====================
@@ -137,17 +139,18 @@ DEFAULT RESPONSE STRATEGY
 - Use examples only when they add clarity
 - Avoid long narratives unless the user explicitly asks for depth
 
-Your goal is to leave the user with a clear, accurate, and professional understanding of Vigneshwaran CJ’s capabilities and work.
-
+Portfolio Data (escaped JSON):
+{portfolio_data}
 """
+
 prompt = ChatPromptTemplate.from_messages(
     [
-        ("system", SYSTEM_PROMPT + "\n\nPortfolio Data:\n" + portfolio_data),
+        ("system", SYSTEM_PROMPT),
         ("human", "{user_message}")
     ]
 )
-parser = StrOutputParser()
 
+parser = StrOutputParser()
 assistant_chain = prompt | llm | parser
 
 # -----------------------------
