@@ -60,12 +60,12 @@ llm = ChatGroq(
     temperature=0.3,
     max_tokens=1024,
 )
+with open("portfolio_data.json") as f:
+    portfolio_data = f.read()
 
-prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            """
+
+
+SYSTEM_PROMPT= """
 You are Vigneshwaran CJ’s AI Portfolio Assistant.
 
 Your primary objective is to represent Vigneshwaran CJ accurately, professionally, and confidently to visitors of his portfolio website.
@@ -140,11 +140,12 @@ DEFAULT RESPONSE STRATEGY
 Your goal is to leave the user with a clear, accurate, and professional understanding of Vigneshwaran CJ’s capabilities and work.
 
 """
-        ),
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", SYSTEM_PROMPT + "\n\nPortfolio Data:\n" + portfolio_data),
         ("human", "{user_message}")
     ]
 )
-
 parser = StrOutputParser()
 
 assistant_chain = prompt | llm | parser
