@@ -1,0 +1,86 @@
+{
+
+  "skills": {
+    "Programming Languages": ["Python", "R", "SQL", "JavaScript", "C++"],
+    "Data Science & ML": ["Pandas", "NumPy", "Scikit Learn", "PyTorch", "TensorFlow"],
+    "Frontend Development": ["React.js", "Redux", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
+    "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI"],
+    "Databases": ["MongoDB", "Oracle", "PostgreSQL", "SQL"],
+    "Cloud & DevOps": ["AWS", "Google Cloud", "Firebase", "Cloud"],
+    "AI & LLMs": ["GPT-4", "LangChain", "LangGraph", "Agentic AI"],
+    "Bioinformatics & Research": ["Glycomics", "Cytoscape", "Galaxy"],
+    "Tools & Others": [
+      "Git",
+      "GitHub",
+      "Postman",
+      "Jupyter Notebook",
+      "Photoshop",
+      "Linux",
+      "Vim",
+      "Arduino",
+      "macOS"
+    ]
+  }
+
+  "projects": {
+    "Syncly": {
+      "description": "Syncly - Full Stack Web Application- Professional Networking Platform : Developed a cross-sector professional networking platform using MongoDB, Express.js, React.js, and Node.js, enabling technical and non-technical professionals to connect, collaborate, and share projects.
+Implemented real-time chat functionality using Socket.IO WebSocket technology, allowing instant message delivery, typing indicators, and active user tracking within chatrooms.
+Built a custom portfolio builder feature where users can create and personalize their portfolio pages by filling out a structured form, instantly generating a professional, responsive web profile without coding.
+Deployed application on AWS EC2 with optimized frontend & backend builds for high availability and fast performance.
+Configured AWS SES (Simple Email Service) for sending automated onboarding and notification emails.
+Implemented a cron job to trigger daily email updates for users, summarizing collaboration invites, profile visits, and new connections.
+Designed and deployed scalable REST APIs with a modular architecture for maintainability.",
+      "tech_stack": [
+    "React.js",
+    "Socket.IO (frontend)",
+    "HTML5 / CSS3 / JavaScript",
+    "Node.js",
+    "Express.js",
+    "Socket.IO (backend)",
+    "Cron jobs (Node-cron or similar)",
+    "MongoDB",
+    "AWS EC2",
+    "AWS SES (Simple Email Service)",
+    "Deployment optimization for performance and high availability",
+    "REST APIs (modular architecture)",
+    "Custom portfolio builder feature"
+],
+      "role": "Full-stack development, backend APIs, deployment",
+    },
+    "GlycanBench": {
+      "description": "GlycanBench: tools and models for working with glycan-omics : Developed an interactive glycomics platform using Python (FastAPI/Flask) backend, React.js frontend, and Tailwind CSS, enabling researchers to analyze, visualize, and manipulate glycan structures.
+Integrated multiple glycan-based deep learning models (BiLSTM, XGBoost, GAT, GIN, MPNN) for immunogenicity prediction achieving up to 98.2% accuracy, as well as motif extraction and mutation analysis.
+Deployed the platform on SASTRA University servers, with optimized backend services and frontend builds for high availability and responsive performance.
+Designed scalable REST APIs and modular backend architecture to support advanced glycan data processing, network analysis, and model predictions efficiently.",
+      "tech_stack": ["Python", "PyTorch", "Full-stack development, backend APIs, deployment","Flask"],
+      "role": "ML model development and evaluation, Full-stack development, Web development",
+      "results": "High accuracy prediction on benchmark datasets , mostly glycan-omics and glycans related research is rare"
+    }
+  },
+link:"https://glycanbench.sastra.edu/"
+  "research": ["Graph Neural Networks", "Computational Glycobiology"]
+},
+"Development of Quantitative Structure Property Relationship Models for Self-Emulsifying Drug Delivery System of Posaconazole":{
+ "description":" I developed Quantitative Structure-Property Relationship (QSPR) models to predict the solubility of Posaconazole in Self-Emulsifying Drug Delivery Systems (SEDDS). This involved encoding formulation components—such as surfactants, co-surfactants, and oils—using electronic, geometric, and topological descriptors derived through quantum chemical calculations. Key descriptors were selected using Variance Inflation Factor (VIF) analysis to eliminate multicollinearity and enhance model interpretability.
+I applied and compared multiple machine learning algorithms including Multiple Linear Regression, Random Forest, K-Nearest Neighbors, and Support Vector Machines. The Random Forest models outperformed others, achieving R² scores up to 0.926. The study demonstrated the potential of QSPR modeling in pharmaceutical formulation screening and laid the groundwork for a future web application that predicts optimal SEDDS compositions based on user-input drug molecules."
+  "tech_stack":["Machine Learning","Web Development","Quantitative Structure-Property Relationship (QSPR)","Pharma"]
+}
+"Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer":{
+ "description": "I developed an explainable machine learning framework for discovering potent EGFR (Epidermal Growth Factor Receptor) inhibitors targeting ovarian cancer. The project leveraged data-driven approaches to accelerate drug discovery by predicting the bioactivity of chemical compounds using public datasets from the ChEMBL database. Bioactivity data were filtered based on IC50 values and classified into active or inactive categories, forming the foundation for supervised learning tasks. 
+                             
+A comprehensive cheminformatics pipeline was built using RDKit and Mordred to calculate over 1800 molecular descriptors, followed by rigorous preprocessing and feature selection using Lasso regularization. Multiple machine learning models including Random Forest, Gradient Boosting, SVM, Logistic Regression, KNN, and Naive Bayes were trained and evaluated using metrics like accuracy, F1-score, and ROC-AUC. Post hyperparameter tuning, Gradient Boosting and Random Forest models achieved top performances with accuracies of 92% and 94.28% respectively, demonstrating strong predictive capability for classifying EGFR inhibitors.
+
+To enhance transparency and interpretability, SHAP (SHapley Additive exPlanations) was integrated into the pipeline. This enabled identification of critical molecular features such as PEOE_VSA9, SM_VSA10, and pic50 that positively influenced predictions. Visualizations like force and waterfall plots provided insight into individual predictions and model decision logic, aligning with the goals of explainable AI in biomedical applications. Overall, this project demonstrated how interpretable machine learning can be effectively applied to rational drug design and bioactivity prediction.
+",
+  
+}
+"Prediction of lignocellulosic components and fermentable sugars for bioethanol production by machine learning approach":{
+  "description":"The project focuses on predicting lignocellulosic components and fermentable sugars in biomass for bioethanol production using machine learning. A comprehensive database was developed, encompassing values for hemicellulose, cellulose, lignin, fermentable sugars, and bioethanol yield. Various pretreatment methods—physical (ultrasound, microwave), chemical (diluted acid, alkaline hydrolysis, ionic liquid), and physio-chemical (iron nano-catalyst with ionic liquid-assisted ultrasound)—were used to process lignocellulosic biomass.
+
+Proximate analysis determined the amounts of lignin, cellulose, and hemicellulose. Fermentable sugars were extracted and quantified, followed by fermentation with Saccharomyces cerevisiae to assess bioethanol yields from pretreated high-sugar biomass peels.
+
+A supervised machine learning dataset was built, and five models—multiple linear regression, decision tree, random forest and support vector machine regression—were developed and evaluated. Additionally, a dedicated website (‘BFuel’) was created to host and display the collected data and predictions.
+"
+}
+}
