@@ -1,29 +1,25 @@
 version: "3.9"
 
 services:
+  backend:
+    build: .
+    container_name: vignesh-ai-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
-    restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
-      - ollama-data:/root/.ollama
-
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: portfolio-backend
+      - ollama_data:/root/.ollama
     restart: unless-stopped
-    depends_on:
-      - ollama
-    environment:
-      OLLAMA_URL: http://ollama:11434
-      OLLAMA_MODEL: deepseek-r1:1.5b
-      FRONTEND_ORIGIN: https://vigneshwarancj-portfolio-website.vercel.app
-    ports:
-      - "8000:8000"
 
 volumes:
-  ollama-data:
+  ollama_data:
