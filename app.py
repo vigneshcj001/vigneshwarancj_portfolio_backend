@@ -21,16 +21,15 @@ from langchain_core.output_parsers import StrOutputParser
 load_dotenv()
 
 # LangSmith (optional)
-os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY", "")
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = os.getenv(
-    "LANGCHAIN_PROJECT",
-    "vigneshwaran-portfolio-assistant"
+    "LANGCHAIN_PROJECT"
 )
 
 # Ollama configuration
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:120b-cloud")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
 if not OLLAMA_BASE_URL:
     raise RuntimeError("OLLAMA_BASE_URL is not set")
