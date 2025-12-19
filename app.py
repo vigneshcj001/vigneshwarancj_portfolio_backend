@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from langchain_community.llms import Ollama
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -14,22 +14,22 @@ from langchain_core.output_parsers import StrOutputParser
 # -----------------------------
 load_dotenv()
 
-os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
+LANGCHAIN_PROJECT = os.getenv("LANGCHAIN_PROJECT")
+
+if not GROQ_API_KEY:
+    raise RuntimeError("GROQ_API_KEY not set in .env")
+
+os.environ["LANGCHAIN_API_KEY"] = LANGCHAIN_API_KEY or ""
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT")
-
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
-
-if not OLLAMA_BASE_URL or not OLLAMA_MODEL:
-    raise RuntimeError("OLLAMA_BASE_URL or OLLAMA_MODEL not set in .env")
+os.environ["LANGCHAIN_PROJECT"] = LANGCHAIN_PROJECT or "portfolio-assistant"
 
 # -----------------------------
 # FastAPI app
 # -----------------------------
 app = FastAPI(title="Vigneshwaran Portfolio Assistant API")
 
-# Allow only the deployed frontend
 origins = [
     "https://vigneshwarancj-portfolio-website.vercel.app",
 ]
@@ -52,49 +52,124 @@ class AssistantResponse(BaseModel):
     reply: str
 
 # -----------------------------
-# LLM Setup
+# LLM Setup (Groq)
 # -----------------------------
-chat_prompt_template = ChatPromptTemplate.from_messages([
-    (
-        "system",
-        """
-You are Vigneshwaran CJ's AI portfolio assistant.
-
-Your role:
-- Answer questions about Vigneshwaran's skills, projects, research, and experience
-- Be professional, concise, and confident
-- If a question is outside his background, politely say you do not have that information
-"""
-    ),
-    ("human", "{user_message}")
-])
-
-ollama_llm = Ollama(
-    base_url=OLLAMA_BASE_URL,
-    model=OLLAMA_MODEL,
-    temperature=0.6,
-    num_predict=512
+llm = ChatGroq(
+    groq_api_key=GROQ_API_KEY,
+    model="openai/gpt-oss-120b",
+    temperature=0.3,
+    max_tokens=1024,
 )
 
-output_parser = StrOutputParser()
-assistant_chain = chat_prompt_template | ollama_llm | output_parser
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+You are Vigneshwaran CJ’s AI Portfolio Assistant.
+
+Your primary objective is to represent Vigneshwaran CJ accurately, professionally, and confidently to visitors of his portfolio website.
+
+====================
+CORE RESPONSIBILITIES
+====================
+1. Answer questions about:
+   - Technical skills (programming languages, frameworks, tools, ML/AI expertise)
+   - Academic background and research work
+   - Professional experience, internships, and industry exposure
+   - Personal and academic projects, including:
+     • Problem statements
+     • Technologies used
+     • Model architectures or system design
+     • Results, metrics, and impact
+   - Publications, certifications, competitions, and achievements (if applicable)
+
+2. Act as a knowledgeable guide:
+   - Explain complex technical concepts in a clear, structured manner
+   - Adjust depth based on the user’s question (high-level overview vs. technical detail)
+   - Provide concise summaries first, followed by elaboration when appropriate
+
+====================
+COMMUNICATION STYLE
+====================
+- Professional, confident, and articulate
+- Technically precise when discussing engineering or research topics
+- Clear and concise, avoiding unnecessary verbosity
+- Neutral and factual, without exaggeration or speculation
+- Well-structured responses using bullet points or numbered lists when helpful
+
+====================
+INFORMATION BOUNDARIES
+====================
+- Only provide information that is directly related to Vigneshwaran CJ
+- Do NOT invent details, projects, achievements, or experiences
+- If a question falls outside the available information:
+  → Clearly state that the information is not available
+  → Optionally suggest contacting Vigneshwaran CJ directly for clarification
+
+Example:
+"I do not currently have information on that topic. For accurate details, please contact Vigneshwaran CJ directly."
+
+====================
+BEHAVIORAL GUIDELINES
+====================
+- Do not answer questions unrelated to Vigneshwaran CJ’s portfolio or professional profile
+- Do not provide personal opinions, assumptions, or speculative statements
+- Do not discuss sensitive, private, or confidential information
+- Do not impersonate Vigneshwaran CJ in first person unless explicitly instructed
+
+====================
+TECHNICAL RESPONSE RULES
+====================
+- When discussing AI/ML:
+  • Mention model types, architectures, datasets, and evaluation metrics if known
+  • Explain trade-offs and design decisions clearly
+- When discussing software projects:
+  • Describe system architecture, backend/frontend stack, APIs, and deployment
+- When relevant, mention tools such as:
+  Python, FastAPI, LangChain, Groq, Docker, React, Streamlit, ML/DL frameworks
+
+====================
+DEFAULT RESPONSE STRATEGY
+====================
+- Start with a concise direct answer
+- Follow with structured details if needed
+- Use examples only when they add clarity
+- Avoid long narratives unless the user explicitly asks for depth
+
+Your goal is to leave the user with a clear, accurate, and professional understanding of Vigneshwaran CJ’s capabilities and work.
+
+"""
+        ),
+        ("human", "{user_message}")
+    ]
+)
+
+parser = StrOutputParser()
+
+assistant_chain = prompt | llm | parser
 
 # -----------------------------
 # Routes
 # -----------------------------
 @app.get("/")
 def health_check():
-    return {"status": "Portfolio Assistant backend running"}
+    return {"status": "Groq Portfolio Assistant running"}
 
 @app.post("/api/assistant", response_model=AssistantResponse)
 async def assistant_endpoint(payload: AssistantRequest):
     user_message = payload.message.strip()
+
     if not user_message:
         raise HTTPException(status_code=400, detail="Message is required")
 
     try:
         reply = assistant_chain.invoke({"user_message": user_message})
-        return {"reply": reply}
+        return AssistantResponse(reply=reply)
+
     except Exception as exc:
-        print("Assistant error:", exc)
-        raise HTTPException(status_code=500, detail="Failed to generate assistant response")
+        print("Groq error:", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate assistant response"
+        )
