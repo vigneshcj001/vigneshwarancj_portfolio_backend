@@ -112,6 +112,93 @@
       "live_link": "https://www.instagram.com/reel/C1Qg2iCy7D-/"
     }
   },
+  "work_experience": [
+    {
+      "role": "Junior Software Developer",
+      "company": "iSenseHub",
+      "period": "Dec 2025 – Present",
+      "type": "Full-time",
+      "overview": "Designing, developing, and maintaining enterprise-grade applications and AI-powered platforms. Work spans backend APIs, WhatsApp automation, AWS cloud deployments, AI/LLM integration, and internal monitoring systems.",
+      "projects": [
+        {
+          "name": "Bullion Handler",
+          "description": "Core AI document processing platform: document upload, OCR extraction, AI analysis, validation, report generation, OpenAI token tracking.",
+          "tech": ["Python", "FastAPI", "PostgreSQL", "OpenAI"]
+        },
+        {
+          "name": "Bullion Listener",
+          "description": "Event-driven service monitoring incoming events, validating payloads, and triggering Bullion Handler processing pipelines asynchronously.",
+          "tech": ["Python", "FastAPI", "PostgreSQL"]
+        },
+        {
+          "name": "Splendor",
+          "description": "Centralized OpenAI token and subscription management: tracks prompt/completion tokens per model, manages quotas, sends WhatsApp alert notifications.",
+          "tech": ["Python", "FastAPI", "PostgreSQL", "WhatsApp API"]
+        },
+        {
+          "name": "Oblion",
+          "description": "WhatsApp QR-based authentication and session management platform with webhook integration and n8n connectivity.",
+          "tech": ["Node.js", "PostgreSQL", "WhatsApp Web API", "n8n"]
+        },
+        {
+          "name": "Orbit",
+          "description": "Centralized monitoring dashboard aggregating health checks, system diagnostics, API status, and incident detection across all services.",
+          "tech": ["Python", "FastAPI", "ReactJS"]
+        },
+        {
+          "name": "Gluzo",
+          "description": "Cloud-native AWS application using Lambda, API Gateway, DynamoDB, IAM, CloudWatch, Secrets Manager, and EC2 for serverless backend operations.",
+          "tech": ["AWS Lambda", "API Gateway", "DynamoDB", "IAM", "CloudWatch", "Python"]
+        }
+      ],
+      "additional_responsibilities": [
+        "WhatsApp automation for customer communication and onboarding",
+        "REST API design with FastAPI",
+        "PostgreSQL and MongoDB management and query optimisation",
+        "Server deployment and production maintenance",
+        "IAM, Secrets Manager, CloudWatch configuration on AWS"
+      ]
+    },
+    {
+      "role": "AI Engineer Intern",
+      "company": "iSenseHub",
+      "period": "Oct 2025 – Dec 2025",
+      "type": "Internship",
+      "overview": "Built AI-powered automation solutions, OCR-based document systems, LinkedIn automation tools, and multi-agent LLM systems. Integrated AI services, external APIs, and workflow automation platforms.",
+      "projects": [
+        {
+          "name": "AI Weather Agent",
+          "description": "Telegram bot answering weather queries via text and voice using OpenAI NLU, real-time weather APIs, and voice-to-text/TTS pipelines.",
+          "tech": ["Python", "Telegram Bot API", "OpenAI", "Weather APIs"]
+        },
+        {
+          "name": "LinkedIn Automation Platform",
+          "description": "Automated LinkedIn profile analytics, post scraping, engagement tracking, competitor research, and AI content generation via n8n and Apify.",
+          "tech": ["Apify", "n8n", "Gemini", "Python"]
+        },
+        {
+          "name": "LinkedIn Content Creation Agent",
+          "description": "End-to-end AI pipeline: topic research → content drafting → SEO optimisation → hashtag generation → publishing workflow.",
+          "tech": ["n8n", "Gemini", "Python"]
+        },
+        {
+          "name": "SEO DeepAgent",
+          "description": "Automated SEO audit pipelines: competitor analysis, keyword research, traffic insights, AI-generated recommendations using Serpstat.",
+          "tech": ["DeepAgent", "Serpstat", "OpenAI", "Python"]
+        },
+        {
+          "name": "Multi-Agent Financial AI",
+          "description": "Multi-agent system for financial analysis and report generation using Groq LLaMA models orchestrated with the Phi Framework.",
+          "tech": ["Groq LLaMA", "Phi Framework", "Python"]
+        },
+        {
+          "name": "Business Card OCR System",
+          "description": "Automated pipeline for business card OCR extraction, contact validation, MongoDB storage, and CSV export with FastAPI backend and Streamlit UI.",
+          "tech": ["FastAPI", "MongoDB", "Streamlit", "Tesseract OCR"]
+        }
+      ]
+    }
+  ],
   "stats": {
     "total_projects": 9,
     "total_skills": 40,
