@@ -112,10 +112,16 @@
       "live_link": "https://www.instagram.com/reel/C1Qg2iCy7D-/"
     }
   },
+  "employer": {
+    "name": "Ceiyone Tech Works Private Limited",
+    "short": "Ceiyone Tech Works Pvt. Ltd.",
+    "type": "Zoho Partner in India",
+    "address": "25/2, Masakalipalayam, Ram Lakshman Nagar, Peelamedu, Coimbatore, Tamil Nadu 641028"
+  },
   "work_experience": [
     {
       "role": "Junior Software Developer",
-      "company": "iSenseHub",
+      "company": "Ceiyone Tech Works Pvt. Ltd.",
       "period": "Dec 2025 – Present",
       "type": "Full-time",
       "overview": "Designing, developing, and maintaining enterprise-grade applications and AI-powered platforms. Work spans backend APIs, WhatsApp automation, AWS cloud deployments, AI/LLM integration, and internal monitoring systems.",
@@ -161,7 +167,7 @@
     },
     {
       "role": "AI Engineer Intern",
-      "company": "iSenseHub",
+      "company": "Ceiyone Tech Works Pvt. Ltd.",
       "period": "Oct 2025 – Dec 2025",
       "type": "Internship",
       "overview": "Built AI-powered automation solutions, OCR-based document systems, LinkedIn automation tools, and multi-agent LLM systems. Integrated AI services, external APIs, and workflow automation platforms.",
