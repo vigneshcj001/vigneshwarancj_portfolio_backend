@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 
-from app.ai.chain import assistant_chain
+from app.ai.chain import assistant_chain, build_history
 from app.ai.sanitizer import clean_output
 from app.limiter import limiter
 from app.models import AssistantRequest, AssistantResponse
@@ -17,8 +17,16 @@ def health_check():
 @limiter.limit("10/minute")
 async def assistant_endpoint(request: Request, payload: AssistantRequest):
     try:
-        raw_reply = assistant_chain.invoke({"user_message": payload.message})
+        chat_history = build_history(
+            [{"role": h.role, "content": h.content} for h in payload.history]
+        )
+        raw_reply = await assistant_chain.ainvoke(
+            {
+                "user_message": payload.message,
+                "chat_history": chat_history,
+            }
+        )
         reply = clean_output(raw_reply)
         return AssistantResponse(reply=reply)
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to generate response")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="Failed to generate response") from exc
