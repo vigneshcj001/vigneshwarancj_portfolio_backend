@@ -17,7 +17,7 @@
       "degree": "Master of Technology in Big Data Biology",
       "institution": "SASTRA Deemed University",
       "location": "Thanjavur, Tamil Nadu, India",
-      "period": "Aug 2023 – Present",
+      "period": "Aug 2023 – Jun 2025",
       "grade": "79.67%",
       "focus": "ML for biology, glycomics, bioinformatics, data science"
     },
@@ -91,10 +91,10 @@
       "tech_stack": ["Bioinformatics", "Research", "Bioethanol Analysis"]
     },
     "CJFoods": {
-      "type": "Full-Stack",
-      "subtitle": "MERN Food Delivery App",
-      "description": "A scalable MERN-based food delivery platform integrating the Swiggy API for live restaurant and menu data. Features real-time UI updates and optimized performance.",
-      "tech_stack": ["React.js", "Node.js", "MongoDB", "Express.js"],
+      "type": "Frontend",
+      "subtitle": "React.js Food Delivery App",
+      "description": "Frontend-only React.js SPA consuming the Swiggy API in real time. No backend, no database — displays live restaurant listings, menus, and filters with a responsive, performance-optimised UI.",
+      "tech_stack": ["React.js", "Swiggy API", "JavaScript"],
       "live_link": "https://cj-foods.vercel.app/"
     },
     "TinDog": {
