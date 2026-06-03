@@ -1,0 +1,11 @@
+.env
+.env.*
+*.pyc
+__pycache__/
+.git/
+.gitignore
+pyrightconfig.json
+*.md
+.parcel-cache/
+venv/
+.venv/
