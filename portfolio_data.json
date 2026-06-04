@@ -64,7 +64,7 @@
     "Drug Discovery via ML"
   ],
   "skills": {
-    "Programming Languages": ["Python", "R", "SQL", "JavaScript", "C++"],
+    "Programming Languages": ["Python", "R", "SQL", "JavaScript"],
     "Data Science & ML": ["Pandas", "NumPy", "Scikit-Learn", "PyTorch", "TensorFlow", "SHAP"],
     "Frontend Development": ["React.js", "Redux", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
     "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI", "Streamlit", "Socket.IO"],
