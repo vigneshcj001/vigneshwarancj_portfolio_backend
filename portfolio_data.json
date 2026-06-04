@@ -90,14 +90,27 @@
         "Deployed on AWS EC2"
       ]
     },
-    "GlycanBench": {
+    "GlycanBench: integrated resource for working with glycans": {
       "type": "AI/Research Platform",
-      "subtitle": "Glycomics AI Platform",
-      "description": "GlycanBench is an interactive glycomics research platform hosted at SASTRA University. It lets researchers analyze, visualize, and manipulate glycan structures. Vigneshwaran integrated multiple deep learning models — BiLSTM, XGBoost, GAT, GIN, MPNN — for immunogenicity prediction, achieving up to 98.2% accuracy. The platform also supports motif extraction and mutation analysis. Backend is FastAPI/Flask (Python), frontend is React.js with Tailwind CSS.",
-      "tech_stack": ["Python", "FastAPI", "Flask", "React.js", "Tailwind CSS", "PyTorch", "BiLSTM", "GAT", "GIN", "MPNN", "XGBoost"],
-      "role": "ML model development and evaluation, full-stack development",
+      "subtitle": "Glycoinformatics Web-Server · SASTRA University",
+      "description": "GlycanBench is a comprehensive glycoinformatics platform and Python package developed by Vigneshwaran CJ and Ashok Palaniappan at the Systems Computational Biology Lab, SASTRA Deemed University. Glycans are monosaccharide polymers fundamental to life, playing pivotal roles in immunity and all major human diseases. Most host-pathogen interactions depend on glycan structures. GlycanBench covers the full glycan research workflow: creation (glycan molecules, biosynthetic networks, format conversion), visualisation (2D draw, 3D representation, KEGG pathway view), analysis (monosaccharide/glycan characterisation, descriptor generation, motif mutation), comparative analysis via molecular fingerprints (Morgan r=2/3, AtomPair, Torsion, RDKit), sequence alignment with custom scoring, hierarchical/k-means clustering with outlier detection, an optimised MPNN model for immunogenicity prediction with explainable outputs, and a glycobiology chat interface. All tools provide publication-quality visualisation. Freely available as a web-server and Python package for academic and non-profit use.",
+      "tech_stack": ["Python", "FastAPI", "Flask", "React.js", "Tailwind CSS", "PyTorch", "MPNN", "RDKit"],
+      "authors": ["Vigneshwaran CJ", "Ashok Palaniappan"],
+      "institution": "Systems Computational Biology Lab, Bioinformatics Center, School of Chemical & Biotechnology, SASTRA Deemed University",
+      "contact": "apalania@scbt.sastra.edu",
+      "citation": "GlycanBench: integrated resource for working with glycans (submitted)",
+      "role": "Full-stack development, ML model integration, glycoinformatics pipeline",
       "live_link": "https://glycanbench.sastra.edu/",
-      "highlights": ["98.2% immunogenicity prediction accuracy", "5 deep learning model types", "Deployed on SASTRA University servers"]
+      "features": [
+        "Create: glycan molecules, biosynthetic networks, format conversion",
+        "Visualise: 2D draw, 3D representation, KEGG pathway view",
+        "Analyse: monosaccharide/glycan characterisation, descriptor generation, motif mutation",
+        "Compare: fingerprint-based pair comparison (Morgan, AtomPair, Torsion, RDKit)",
+        "Align: glycan sequences with custom scoring",
+        "Cluster: hierarchical/k-means, outlier detection, optimal cluster number",
+        "Predict: MPNN immunogenicity prediction with explainable output",
+        "Chat: glycobiology literature interface"
+      ]
     },
     "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer": {
       "type": "Research / Explainable ML",
