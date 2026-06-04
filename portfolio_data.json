@@ -115,12 +115,12 @@
     "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer": {
       "type": "Research / Explainable ML",
       "subtitle": "M.Tech Thesis · Explainable AI · Drug Discovery",
-      "description": "Vigneshwaran's M.Tech thesis developing an explainable ML framework to identify potent EGFR inhibitors for ovarian cancer. EGFR is a key therapeutic target — its overexpression drives uncontrolled cancer cell proliferation. 310 compounds sourced from ChEMBL (EGFR Target ID: CHEMBL3009) were encoded with RDKit and Mordred molecular descriptors (1833 → 179 features via LASSO selection). Six classifiers evaluated: Gradient Boosting (100% accuracy, AUC=1.00), Random Forest (98.28%, AUC≈1.00), SVM (AUC=0.99), Logistic Regression, KNN, Naive Bayes. SHAP force and waterfall plots identified key activity-driving descriptors: PEOE_VSA9, SM_VSA10, fr_bicyclic, BCUT2D_MRLOW. Binary classification: Active (IC50 ≤ 1000 nM) vs Inactive (IC50 ≥ 10000 nM).",
+      "description": "Vigneshwaran's M.Tech thesis developing an explainable ML framework to identify potent EGFR inhibitors for ovarian cancer. EGFR is a key therapeutic target — its overexpression drives uncontrolled cancer cell proliferation. 310 compounds sourced from ChEMBL (EGFR Target ID: CHEMBL3009) were encoded with RDKit and Mordred molecular descriptors (1833 → 179 features via LASSO selection). Six classifiers evaluated: Gradient Boosting (98.47% accuracy, AUC=1.00), Random Forest (98.28%, AUC≈1.00), SVM (AUC=0.99), Logistic Regression, KNN, Naive Bayes. SHAP force and waterfall plots identified key activity-driving descriptors: PEOE_VSA9, SM_VSA10, fr_bicyclic, BCUT2D_MRLOW. Binary classification: Active (IC50 ≤ 1000 nM) vs Inactive (IC50 ≥ 10000 nM).",
       "tech_stack": ["Python", "Scikit-Learn", "RDKit", "Mordred", "SHAP", "Gradient Boosting", "Random Forest", "ChEMBL"],
       "thesis_details": {
         "dataset": "310 molecules from ChEMBL, EGFR target CHEMBL3009",
         "descriptors": "RDKit + Mordred, 1833 initial → 179 after LASSO feature selection",
-        "best_model": "Gradient Boosting — 100% accuracy, AUC = 1.00",
+        "best_model": "Gradient Boosting — 98.47% accuracy, AUC = 1.00",
         "second_best": "Random Forest — 98.28% accuracy, AUC ≈ 1.00",
         "xai_tool": "SHAP (force plots + waterfall plots)",
         "key_descriptors": ["PEOE_VSA9", "SM_VSA10", "fr_bicyclic", "pIC50", "BCUT2D_MRLOW"],
