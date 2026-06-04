@@ -93,12 +93,10 @@ _parser = StrOutputParser()
 assistant_chain = _prompt | _llm | _parser
 
 
-def build_history(raw: list) -> list:
-    """Convert list of {{role, content}} dicts to LangChain message objects."""
-    out = []
-    for item in raw:
-        if item["role"] == "user":
-            out.append(HumanMessage(content=item["content"]))
-        else:
-            out.append(AIMessage(content=item["content"]))
-    return out
+def build_history(items) -> list:
+    """Convert HistoryItem list to LangChain message objects."""
+    return [
+        HumanMessage(content=item.content) if item.role == "user"
+        else AIMessage(content=item.content)
+        for item in items
+    ]

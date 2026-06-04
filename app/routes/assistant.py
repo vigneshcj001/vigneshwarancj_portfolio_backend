@@ -23,9 +23,7 @@ def health_check():
 @limiter.limit("10/minute")
 async def assistant_endpoint(request: Request, payload: AssistantRequest):
     try:
-        chat_history = build_history(
-            [{"role": h.role, "content": h.content} for h in payload.history]
-        )
+        chat_history = build_history(payload.history)
         raw_reply = await asyncio.wait_for(
             assistant_chain.ainvoke(
                 {

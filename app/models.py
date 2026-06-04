@@ -22,7 +22,7 @@ class AssistantRequest(BaseModel):
     @field_validator("history")
     @classmethod
     def cap_history(cls, v: list) -> list:
-        return v[-20:]  # keep last 10 exchanges max
+        return v[-20:]  # keep last 20 messages (10 user-assistant pairs)
 
 
 class AssistantResponse(BaseModel):
