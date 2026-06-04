@@ -284,7 +284,7 @@
   ],
   "stats": {
     "total_projects": 9,
-    "total_skills": 51,
+    "total_skills": 50,
     "research_areas": 2,
     "ml_accuracy_peak": "98.2% (GlycanBench immunogenicity prediction)"
   }
