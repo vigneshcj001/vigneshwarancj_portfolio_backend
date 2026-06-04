@@ -65,14 +65,14 @@
   ],
   "skills": {
     "Programming Languages": ["Python", "R", "SQL", "JavaScript", "C++"],
-    "Data Science & ML": ["Pandas", "NumPy", "Scikit-Learn", "PyTorch", "TensorFlow"],
+    "Data Science & ML": ["Pandas", "NumPy", "Scikit-Learn", "PyTorch", "TensorFlow", "SHAP"],
     "Frontend Development": ["React.js", "Redux", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
-    "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI"],
-    "Databases": ["MongoDB", "Oracle", "PostgreSQL"],
+    "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI", "Streamlit", "Socket.IO"],
+    "Databases": ["MongoDB", "PostgreSQL", "DynamoDB", "Oracle"],
     "Cloud & DevOps": ["AWS EC2", "AWS SES", "Google Cloud", "Firebase"],
-    "AI & LLMs": ["GPT-4", "LangChain", "LangGraph", "Agentic AI", "Groq"],
-    "Bioinformatics & Research": ["Glycomics", "Cytoscape", "Galaxy", "RDKit", "Mordred", "SHAP"],
-    "Tools": ["Git", "GitHub", "Postman", "Jupyter Notebook", "Photoshop", "Linux", "Vim", "Arduino", "macOS"]
+    "AI & LLMs": ["GPT-4", "LangChain", "LangGraph", "Groq", "Agentic AI"],
+    "Bioinformatics & Research": ["RDKit", "Mordred", "Glycomics", "Cytoscape", "Galaxy"],
+    "Tools": ["Git", "GitHub", "n8n", "Postman", "Jupyter Notebook", "Linux", "Vim", "Arduino", "Photoshop", "macOS"]
   },
   "projects": {
     "Syncly": {
@@ -284,7 +284,7 @@
   ],
   "stats": {
     "total_projects": 9,
-    "total_skills": 40,
+    "total_skills": 51,
     "research_areas": 2,
     "ml_accuracy_peak": "98.2% (GlycanBench immunogenicity prediction)"
   }
