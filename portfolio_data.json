@@ -29,6 +29,33 @@
       "grade": "84.4%"
     }
   ],
+  "certifications": [
+    {
+      "title": "Namaste ReactJS",
+      "issuer": "NamasteDev",
+      "instructor": "Akshay Saini",
+      "topics": [
+        "React Hooks", "State Management", "Config Driven UI", "Redux",
+        "Reusable Components", "Props & State", "Class & Functional Components",
+        "Lists & Keys", "React Router", "Optimizations", "Bundlers & Babel",
+        "Code Splitting", "HOCs", "Custom Hooks", "Tailwind CSS",
+        "Jest", "React Testing Library", "Interview Prep"
+      ],
+      "description": "Hands-on React course covering React Hooks, State Management, Config Driven UI, Redux, Reusable Components, Props & State, Class & Functional Components, Lists & Keys, React Router, Optimizations, Bundlers & Babel, Code Splitting, HOCs, Custom Hooks, Tailwind CSS, Jest, React Testing Library, and building scalable production-ready apps."
+    },
+    {
+      "title": "Namaste Node.js",
+      "issuer": "NamasteDev",
+      "instructor": "Akshay Saini",
+      "topics": [
+        "Event Loop", "libuv", "V8 Engine", "Async Programming", "Modules",
+        "REST APIs", "Express.js", "MongoDB & Mongoose", "JWT",
+        "Security Best Practices", "Error Handling", "WebSockets",
+        "AWS Deployment", "Nginx", "Scaling & Performance"
+      ],
+      "description": "Node.js fundamentals to advanced concepts including Event Loop, libuv, V8 engine, async programming, modules, REST APIs, Express.js, MongoDB & Mongoose, authentication with JWT, security best practices, error handling, deployment (AWS, Nginx), real-time apps with WebSockets, and scaling strategies & performance optimization."
+    }
+  ],
   "research_interests": [
     "Graph Neural Networks",
     "Computational Glycobiology",
@@ -51,11 +78,17 @@
     "Syncly": {
       "type": "Full-Stack Web Application",
       "subtitle": "Professional Networking Platform",
-      "description": "Syncly is a cross-sector professional networking platform Vigneshwaran built from scratch. It lets technical and non-technical professionals connect, collaborate, and share projects. Features include real-time chat via Socket.IO with typing indicators and active user tracking, a custom portfolio builder (no-code, form-driven), AWS EC2 deployment with optimized builds, AWS SES for automated onboarding and notification emails, and a cron job for daily email digests. The backend uses modular REST APIs.",
-      "tech_stack": ["React.js", "Node.js", "Express.js", "MongoDB", "Socket.IO", "AWS EC2", "AWS SES", "Node-cron"],
+      "description": "Syncly is a full-stack professional networking platform Vigneshwaran built from scratch, designed to help individuals, researchers, and professionals across diverse sectors (Tech, Biology, Commerce, IT, and more) connect, collaborate, and share projects. Unlike traditional networking apps, Syncly emphasises real collaboration through swipe-based matchmaking (right swipe = Vibe to connect, left swipe = Ghost to skip), real-time chat via Socket.IO with typing indicators and active user tracking, a custom portfolio builder (users generate a professional responsive portfolio by filling out forms — no coding required), AWS SES integration for onboarding and notification emails with cron-based daily collaboration summaries, and scalable modular REST APIs. Deployed on AWS EC2.",
+      "tech_stack": ["React.js", "Redux", "Tailwind CSS", "Node.js", "Express.js", "MongoDB", "Socket.IO", "AWS EC2", "AWS SES", "Node-cron", "Radix UI"],
       "role": "Solo full-stack development, backend APIs, AWS deployment",
       "live_link": "https://syncly.co.in",
-      "highlights": ["Real-time chat", "Portfolio builder", "AWS deployment", "SES email automation", "Daily cron digest"]
+      "highlights": [
+        "Swipe-based matchmaking (Vibe/Ghost)",
+        "Real-time chat with typing indicators and active user tracking",
+        "Custom no-code portfolio builder",
+        "AWS SES email automation with daily cron summaries",
+        "Deployed on AWS EC2"
+      ]
     },
     "GlycanBench": {
       "type": "AI/Research Platform",
@@ -72,11 +105,16 @@
       "description": "Vigneshwaran built an explainable ML framework to discover potent EGFR inhibitors targeting ovarian cancer. Using ChEMBL bioactivity data, he built a cheminformatics pipeline with RDKit and Mordred for 1800+ molecular descriptors. After Lasso feature selection, Gradient Boosting achieved 92% accuracy and Random Forest 94.28%. SHAP explanations identified key molecular features (PEOE_VSA9, SM_VSA10, pic50) and produced force/waterfall plots for interpretability.",
       "tech_stack": ["Python", "Scikit-Learn", "RDKit", "Mordred", "SHAP", "Gradient Boosting", "Random Forest", "ChEMBL"]
     },
-    "Lignocellulosic Bioethanol Prediction": {
+    "Prediction of lignocellulosic components and fermentable sugars for bioethanol production by machine learning approach": {
       "type": "Research / ML",
-      "subtitle": "ML for Green Energy",
-      "description": "ML models for predicting lignocellulosic components (cellulose, hemicellulose, lignin) and fermentable sugars in biomass for bioethanol production. Multiple pretreatment methods were studied. Models trained: MLR, Decision Tree, Random Forest, SVM. He also built the BFuel website to host the dataset and predictions.",
-      "tech_stack": ["Python", "Scikit-Learn", "Random Forest", "SVM", "Web Development"]
+      "subtitle": "ML for Green Energy · Biomass Pretreatment",
+      "description": "This study explores efficient bioethanol production from waste biomass using an integrated approach of nanotechnology, green pretreatment methods, and machine learning. Twenty different lignocellulosic biomass samples (mainly fruit peels and agro-wastes) were pretreated using physical, chemical, and novel physicochemical methods — including nanocatalyst-assisted ionic liquid combined with ultrasound — to extract fermentable sugars. Iron nanoparticles synthesised from Musa acuminata peels improved biomass breakdown. Machine learning models — Decision Tree, Random Forest, and LGBM — were trained on experimental data to predict biomass composition and ethanol yield. Random Forest and Decision Tree showed high accuracy in predicting lignocellulosic content and sugar yield. A BFuel web platform was developed to store and display experimental data.",
+      "tech_stack": ["Python", "Scikit-Learn", "Random Forest", "LGBM", "Decision Tree", "Web Development"],
+      "key_contributions": [
+        "Eco-friendly biomass pretreatment using nanotechnology and ionic liquids",
+        "Multiple ML algorithms for predictive modeling of biomass composition and ethanol yield",
+        "BFuel web-based database for managing biomass and bioethanol data"
+      ]
     },
     "QSPR for Posaconazole SEDDS": {
       "type": "Research / Pharmaceutical ML",
@@ -84,11 +122,12 @@
       "description": "QSPR models to predict Posaconazole solubility in Self-Emulsifying Drug Delivery Systems (SEDDS). Formulation components encoded with quantum chemical descriptors. VIF analysis eliminated multicollinearity. Random Forest achieved R² up to 0.926, outperforming MLR, KNN, and SVM.",
       "tech_stack": ["Python", "Machine Learning", "QSPR", "Random Forest", "Quantum Descriptors"]
     },
-    "Guazuma ulmifolia Bioethanol Suitability": {
+    "Suitability Studies Of Fruits Of West Indian elm Plant (Guazuma ulmifolia) As Feedstock For Biofuel production": {
       "type": "Research / Bioenergy",
-      "subtitle": "West Indian Elm as Bioethanol Feedstock",
-      "description": "Evaluated Guazuma ulmifolia (West Indian Elm) fruit as a bioethanol feedstock via chemical pretreatment, proximate analysis, and fermentable sugar quantification to assess its suitability for bioethanol production.",
-      "tech_stack": ["Bioinformatics", "Research", "Bioethanol Analysis"]
+      "subtitle": "Biofuel Feedstock Evaluation",
+      "description": "Investigated the potential of Guazuma ulmifolia (West Indian Elm) fruits as a feedstock for biofuel production. Fruits were ground into powder and extracted using solvent extraction with petroleum ether. Confirmatory tests for lipids (emulsion and acrolein assays) were performed on the solvent-vaporised residue. The processed biomass was subjected to H₂SO₄ acid hydrolysis followed by heat treatment and tested for fermentable sugars. The sample contained no lipids but did contain carbohydrates, supporting bioethanol potential over biodiesel. Future work focuses on comparative analysis of solvent extraction versus nano-catalysts and enzymatic pretreatment for improved sugar yield.",
+      "tech_stack": ["Bioinformatics", "Research", "Bioethanol Analysis", "Biomass Pretreatment"],
+      "findings": "No lipids detected; carbohydrates confirmed — supports bioethanol over biodiesel pathway"
     },
     "CJFoods": {
       "type": "Frontend",
@@ -203,6 +242,44 @@
           "tech": ["FastAPI", "MongoDB", "Streamlit", "Tesseract OCR"]
         }
       ]
+    },
+    {
+      "role": "Research Intern",
+      "company": "Manipal Institute of Technology",
+      "period": "Jun 2024 – Jul 2024",
+      "duration": "2 mos",
+      "type": "Internship",
+      "location": "Karnataka, India · On-site",
+      "supervisor": "Dr. Neha Sureshchandra Gandhi",
+      "research_area": "Quantitative Structure Activity Relationship (QSAR) & Quantitative Structure Property Relationship (QSPR)",
+      "overview": "Developed ML-based QSPR models to predict the solubility of Posaconazole in Self-Emulsifying Drug Delivery Systems (SEDDS). Used RDKit for molecular descriptor generation (50+ descriptors), VIF analysis for feature selection (10 key descriptors: ELUMO, EHOMO, MaxQ-, MaxQ+, MinPartialCharge, MaxPartialCharge, MinAbsPartialCharge, FpDensityMorgan2, PEOE_VSA1, HallKierAlpha). Evaluated Linear Regression, Random Forest, PLS, KNN, and SVM models.",
+      "project": {
+        "name": "Development of QSPR Models for Self-Emulsifying Drug Delivery System (SEDDS) of Posaconazole",
+        "description": "Built ML models predicting drug solubility in SEDDS formulations from molecular descriptors. Dataset consisted of oils, surfactants, co-surfactants, and drug compositions.",
+        "results": {
+          "Random Forest": "R² = 0.865",
+          "Linear Regression": "R² = 0.740",
+          "PLS": "R² = 0.733",
+          "SVM": "R² = 0.630",
+          "KNN": "R² = 0.590"
+        },
+        "tech": ["Python", "RDKit", "Scikit-Learn", "Random Forest", "PLS", "Linear Regression", "SVM", "KNN", "Mordred"]
+      },
+      "impact": [
+        "Reduced dependence on costly and time-consuming laboratory formulation screening",
+        "Demonstrated practical application of AI and ML in pharmaceutical research",
+        "Built interpretable predictive framework for estimating drug solubility using molecular descriptors",
+        "Proposed future web-based recommendation system for suggesting optimal SEDDS formulations"
+      ]
+    },
+    {
+      "role": "Tutor",
+      "company": "Kamakshi Tuition Centre",
+      "period": "Jan 2023 – Jun 2023",
+      "duration": "6 mos",
+      "type": "Part-time",
+      "location": "Mugalivakkam, Chennai · On-site",
+      "overview": "Taught mathematics to 9th grade students and Python programming to 12th grade students at Kamakshi Tuition Centre, Mugalivakkam Arasa Maram."
     }
   ],
   "stats": {
