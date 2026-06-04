@@ -99,11 +99,20 @@
       "live_link": "https://glycanbench.sastra.edu/",
       "highlights": ["98.2% immunogenicity prediction accuracy", "5 deep learning model types", "Deployed on SASTRA University servers"]
     },
-    "EGFR Inhibitors for Ovarian Cancer": {
+    "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer": {
       "type": "Research / Explainable ML",
-      "subtitle": "Drug Discovery via Explainable AI",
-      "description": "Vigneshwaran built an explainable ML framework to discover potent EGFR inhibitors targeting ovarian cancer. Using ChEMBL bioactivity data, he built a cheminformatics pipeline with RDKit and Mordred for 1800+ molecular descriptors. After Lasso feature selection, Gradient Boosting achieved 92% accuracy and Random Forest 94.28%. SHAP explanations identified key molecular features (PEOE_VSA9, SM_VSA10, pic50) and produced force/waterfall plots for interpretability.",
-      "tech_stack": ["Python", "Scikit-Learn", "RDKit", "Mordred", "SHAP", "Gradient Boosting", "Random Forest", "ChEMBL"]
+      "subtitle": "M.Tech Thesis · Explainable AI · Drug Discovery",
+      "description": "Vigneshwaran's M.Tech thesis developing an explainable ML framework to identify potent EGFR inhibitors for ovarian cancer. EGFR is a key therapeutic target — its overexpression drives uncontrolled cancer cell proliferation. 310 compounds sourced from ChEMBL (EGFR Target ID: CHEMBL3009) were encoded with RDKit and Mordred molecular descriptors (1833 → 179 features via LASSO selection). Six classifiers evaluated: Gradient Boosting (100% accuracy, AUC=1.00), Random Forest (98.28%, AUC≈1.00), SVM (AUC=0.99), Logistic Regression, KNN, Naive Bayes. SHAP force and waterfall plots identified key activity-driving descriptors: PEOE_VSA9, SM_VSA10, fr_bicyclic, BCUT2D_MRLOW. Binary classification: Active (IC50 ≤ 1000 nM) vs Inactive (IC50 ≥ 10000 nM).",
+      "tech_stack": ["Python", "Scikit-Learn", "RDKit", "Mordred", "SHAP", "Gradient Boosting", "Random Forest", "ChEMBL"],
+      "thesis_details": {
+        "dataset": "310 molecules from ChEMBL, EGFR target CHEMBL3009",
+        "descriptors": "RDKit + Mordred, 1833 initial → 179 after LASSO feature selection",
+        "best_model": "Gradient Boosting — 100% accuracy, AUC = 1.00",
+        "second_best": "Random Forest — 98.28% accuracy, AUC ≈ 1.00",
+        "xai_tool": "SHAP (force plots + waterfall plots)",
+        "key_descriptors": ["PEOE_VSA9", "SM_VSA10", "fr_bicyclic", "pIC50", "BCUT2D_MRLOW"],
+        "institution": "SASTRA Deemed University, M.Tech Big Data Biology"
+      }
     },
     "Prediction of lignocellulosic components and fermentable sugars for bioethanol production by machine learning approach": {
       "type": "Research / ML",
@@ -118,9 +127,18 @@
     },
     "QSPR for Posaconazole SEDDS": {
       "type": "Research / Pharmaceutical ML",
-      "subtitle": "Pharmaceutical Formulation Modeling",
-      "description": "QSPR models to predict Posaconazole solubility in Self-Emulsifying Drug Delivery Systems (SEDDS). Formulation components encoded with quantum chemical descriptors. VIF analysis eliminated multicollinearity. Random Forest achieved R² up to 0.926, outperforming MLR, KNN, and SVM.",
-      "tech_stack": ["Python", "Machine Learning", "QSPR", "Random Forest", "Quantum Descriptors"]
+      "subtitle": "Drug Solubility Prediction · Manipal Institute of Technology",
+      "description": "Developed at Manipal Institute of Technology (supervised by Dr. Neha Sureshchandra Gandhi) as part of a research internship. Built ML-based QSPR models to predict Posaconazole solubility in Self-Emulsifying Drug Delivery Systems (SEDDS). Dataset consisted of oils, surfactants, co-surfactants, and drug compositions. 50+ molecular descriptors generated with RDKit; VIF analysis reduced to 10 key descriptors: ELUMO, EHOMO, MaxQ-, MaxQ+, MinPartialCharge, MaxPartialCharge, MinAbsPartialCharge, FpDensityMorgan2, PEOE_VSA1, HallKierAlpha. Random Forest achieved R²=0.865, outperforming PLS (0.733), Linear Regression (0.740), SVM (0.630), and KNN (0.590).",
+      "tech_stack": ["Python", "RDKit", "Scikit-Learn", "Random Forest", "PLS", "Linear Regression", "SVM", "KNN", "Mordred"],
+      "results": {
+        "Random Forest": "R² = 0.865",
+        "Linear Regression": "R² = 0.740",
+        "PLS": "R² = 0.733",
+        "SVM": "R² = 0.630",
+        "KNN": "R² = 0.590"
+      },
+      "institution": "Manipal Institute of Technology",
+      "supervisor": "Dr. Neha Sureshchandra Gandhi"
     },
     "Suitability Studies Of Fruits Of West Indian elm Plant (Guazuma ulmifolia) As Feedstock For Biofuel production": {
       "type": "Research / Bioenergy",
