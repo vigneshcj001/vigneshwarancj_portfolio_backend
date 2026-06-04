@@ -33,9 +33,9 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
             if len(body_bytes) > MAX_BODY_BYTES:
                 return JSONResponse(status_code=413, content={"detail": "Request too large"})
 
-        # Re-inject the consumed body so downstream handlers can read it
-        async def _replay():
-            return {"type": "http.request", "body": body_bytes, "more_body": False}
-
-        request._receive = _replay  # type: ignore[attr-defined]
+        # Re-inject consumed body via the _body cache.
+        # Setting _receive is not sufficient — Starlette's stream() checks
+        # _stream_consumed before calling _receive and raises RuntimeError.
+        # Setting _body makes body() / stream() return the cached bytes directly.
+        request._body = body_bytes  # type: ignore[attr-defined]
         return await call_next(request)
