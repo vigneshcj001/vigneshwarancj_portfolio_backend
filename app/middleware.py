@@ -23,8 +23,12 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Fast-path: reject immediately when Content-Length header is present and too large
         content_length = request.headers.get("content-length")
-        if content_length and int(content_length) > MAX_BODY_BYTES:
-            return JSONResponse(status_code=413, content={"detail": "Request too large"})
+        if content_length:
+            try:
+                if int(content_length) > MAX_BODY_BYTES:
+                    return JSONResponse(status_code=413, content={"detail": "Request too large"})
+            except (ValueError, OverflowError):
+                pass  # malformed header — fall through to slow-path byte counting
 
         # Slow-path: read actual bytes to catch chunked / no-Content-Length requests
         body_bytes = b""

@@ -17,7 +17,10 @@ class AssistantRequest(BaseModel):
     @field_validator("message")
     @classmethod
     def sanitize_message(cls, v: str) -> str:
-        return v.strip()
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("message cannot be empty or whitespace only")
+        return stripped
 
     @field_validator("history")
     @classmethod
