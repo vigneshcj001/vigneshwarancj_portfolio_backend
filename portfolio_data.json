@@ -63,6 +63,54 @@
     "Explainable Machine Learning",
     "Drug Discovery via ML"
   ],
+  "publications": [
+    {
+      "id": "glycanbench",
+      "title": "GlycanBench: integrated resource for working with glycans",
+      "authors": "Vigneshwaran CJ",
+      "guide": "Ashok Palaniappan",
+      "institution": "Systems Computational Biology Lab, SASTRA Deemed University",
+      "year": "2025",
+      "status": "Submitted",
+      "type": "Research Paper",
+      "abstract": "Comprehensive glycoinformatics platform covering glycan creation, 2D/3D visualisation, comparative fingerprint analysis (Morgan, AtomPair, Torsion, RDKit), sequence alignment, hierarchical/k-means clustering with outlier detection, and an optimised MPNN model for immunogenicity prediction with explainable outputs.",
+      "tags": ["Glycomics", "MPNN", "Python", "Bioinformatics", "RDKit"],
+      "link": "https://glycanbench.sastra.edu/"
+    },
+    {
+      "id": "egfr",
+      "title": "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer",
+      "authors": "Vigneshwaran CJ",
+      "institution": "SASTRA Deemed University",
+      "year": "2025",
+      "status": "M.Tech Thesis",
+      "type": "Thesis",
+      "abstract": "Explainable ML framework to identify potent EGFR inhibitors for ovarian cancer. 310 compounds from ChEMBL encoded with RDKit and Mordred (1833 to 179 features via LASSO). Gradient Boosting 98.47%, Random Forest 98.28% (AUC~1.00). SHAP plots identified key descriptors: PEOE_VSA9, SM_VSA10, fr_bicyclic.",
+      "tags": ["Drug Discovery", "SHAP", "EGFR", "Ovarian Cancer", "Gradient Boosting", "RDKit"]
+    },
+    {
+      "id": "lignocellulosic",
+      "title": "Prediction of lignocellulosic components and fermentable sugars for bioethanol production by machine learning approach",
+      "authors": "Vigneshwaran CJ",
+      "institution": "SASTRA Deemed University",
+      "year": "2024",
+      "status": "Research Paper",
+      "type": "Research Paper",
+      "abstract": "ML models (Decision Tree, Random Forest, LGBM) trained on 20 lignocellulosic biomass samples pretreated with nanotechnology and ionic liquids to predict biomass composition and ethanol yield. BFuel web platform for dataset hosting.",
+      "tags": ["Bioethanol", "Random Forest", "LGBM", "Decision Tree", "Biomass"]
+    },
+    {
+      "id": "guazuma",
+      "title": "Suitability Studies Of Fruits Of West Indian elm Plant (Guazuma ulmifolia) As Feedstock For Biofuel production",
+      "authors": "Vigneshwaran CJ",
+      "institution": "Prathyusha Engineering College",
+      "year": "2023",
+      "status": "Research Paper",
+      "type": "Research Paper",
+      "abstract": "Investigated Guazuma ulmifolia fruits as biofuel feedstock via petroleum ether solvent extraction, emulsion and acrolein lipid assays, and H2SO4 acid hydrolysis for fermentable sugar testing. No lipids detected; carbohydrates confirmed — supports bioethanol pathway.",
+      "tags": ["Biofuel", "Biomass", "Bioethanol", "Guazuma ulmifolia"]
+    }
+  ],
   "skills": {
     "Programming Languages": ["Python", "R", "SQL", "JavaScript"],
     "Data Science & ML": ["Pandas", "NumPy", "Scikit-Learn", "PyTorch", "TensorFlow", "SHAP"],
