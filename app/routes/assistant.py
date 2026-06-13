@@ -1,7 +1,9 @@
 import asyncio
+import json
 import logging
 
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 
 from app.ai.chain import assistant_chain, build_history
 from app.ai.sanitizer import clean_output
@@ -43,3 +45,46 @@ async def assistant_endpoint(request: Request, payload: AssistantRequest):
     except Exception as exc:
         logger.exception("Unexpected error in assistant_endpoint: %s", exc)
         raise HTTPException(status_code=500, detail="Failed to generate response") from exc
+
+
+@router.post("/api/assistant/stream")
+@limiter.limit("10/minute")
+async def assistant_stream(request: Request, payload: AssistantRequest):
+    """SSE streaming endpoint — emits text chunks as they arrive from the LLM."""
+    chat_history = build_history(payload.history)
+
+    async def generate():
+        accumulated = ""
+        try:
+            async with asyncio.timeout(LLM_TIMEOUT_SECONDS):
+                async for chunk in assistant_chain.astream(
+                    {
+                        "user_message": payload.message,
+                        "chat_history": chat_history,
+                    }
+                ):
+                    if chunk:
+                        accumulated += chunk
+                        yield f"data: {json.dumps({'text': chunk})}\n\n"
+
+            # Send sanitized full text on done so frontend can replace
+            cleaned = clean_output(accumulated)
+            yield f"data: {json.dumps({'done': True, 'full': cleaned})}\n\n"
+
+        except TimeoutError:
+            logger.warning("Stream timeout for message: %.60r", payload.message)
+            yield f"data: {json.dumps({'error': 'Response timed out — please try again.'})}\n\n"
+
+        except Exception as exc:
+            logger.exception("Streaming error: %s", exc)
+            yield f"data: {json.dumps({'error': 'Failed to generate response.'})}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
