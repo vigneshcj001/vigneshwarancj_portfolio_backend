@@ -134,6 +134,8 @@
       "tech_stack": ["React.js", "Redux", "Tailwind CSS", "Node.js", "Express.js", "MongoDB", "Socket.IO", "AWS EC2", "AWS SES", "Node-cron", "Radix UI"],
       "role": "Solo full-stack development, backend APIs, AWS deployment",
       "live_link": "https://syncly.co.in",
+      "github_frontend": "https://github.com/vigneshcj001/Syncly_fronend",
+      "github_backend": "https://github.com/vigneshcj001/Syncly_Backend",
       "highlights": [
         "Swipe-based matchmaking (Vibe/Ghost)",
         "Real-time chat with typing indicators and active user tracking",
@@ -154,6 +156,7 @@
       "citation": "GlycanBench: integrated resource for working with glycans (submitted)",
       "role": "Full-stack development, ML model integration, glycoinformatics pipeline",
       "live_link": "https://glycanbench.sastra.edu/",
+      "github": "https://github.com/APalaniaLab/GlycanBench",
       "features": [
         "Create: glycan molecules, biosynthetic networks, format conversion",
         "Visualise: 2D draw, 3D representation, KEGG pathway view",
@@ -218,14 +221,16 @@
       "subtitle": "React.js Food Delivery App",
       "description": "Frontend-only React.js SPA consuming the Swiggy API in real time. No backend, no database — displays live restaurant listings, menus, and filters with a responsive, performance-optimised UI.",
       "tech_stack": ["React.js", "Swiggy API", "JavaScript"],
-      "live_link": "https://cj-foods.vercel.app/"
+      "live_link": "https://cj-foods.vercel.app/",
+      "github": "https://github.com/vigneshcj001/CJFoods"
     },
     "TinDog": {
       "type": "Frontend",
       "subtitle": "Responsive Landing Page",
       "description": "A playful dog-dating website built with Bootstrap and HTML, designed to master responsive layout and component patterns.",
       "tech_stack": ["Bootstrap", "HTML", "CSS"],
-      "live_link": "https://tindog-for-dogs.vercel.app/"
+      "live_link": "https://tindog-for-dogs.vercel.app/",
+      "github": "https://github.com/vigneshcj001/Tindog_for_dogs"
     },
     "CJBoT — Cookie": {
       "type": "Hardware / Robotics",
