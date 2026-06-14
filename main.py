@@ -7,6 +7,7 @@ from app.config import ALLOWED_ORIGINS
 from app.limiter import limiter
 from app.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 from app.routes.assistant import router
+from app.routes.resume import router as resume_router
 
 app = FastAPI(
     title="Vigneshwaran Portfolio Assistant API",
@@ -32,3 +33,4 @@ app.add_middleware(RequestSizeLimitMiddleware)
 
 # Routes
 app.include_router(router)
+app.include_router(resume_router)
