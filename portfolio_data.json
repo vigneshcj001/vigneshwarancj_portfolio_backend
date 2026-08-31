@@ -116,11 +116,11 @@
     }
   ],
   "skills": {
-    "Programming Languages": ["Python", "R", "SQL", "JavaScript"],
+    "Programming Languages": ["Python", "R", "SQL", "JavaScript", "TypeScript"],
     "Data Science & ML": ["Pandas", "NumPy", "Scikit-Learn", "PyTorch", "TensorFlow", "SHAP"],
-    "Frontend Development": ["React.js", "Redux", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
-    "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI", "Streamlit", "Socket.IO"],
-    "Databases": ["MongoDB", "PostgreSQL", "DynamoDB", "Oracle"],
+    "Frontend Development": ["React.js", "Next.js", "Redux", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
+    "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI", "Streamlit", "Socket.IO", "BullMQ"],
+    "Databases": ["MongoDB", "PostgreSQL", "DynamoDB", "Oracle", "Redis"],
     "Cloud & DevOps": ["AWS EC2", "AWS SES", "Google Cloud", "Firebase"],
     "AI & LLMs": ["GPT-4", "LangChain", "LangGraph", "Groq", "Agentic AI"],
     "Bioinformatics & Research": ["RDKit", "Mordred", "Glycomics", "Cytoscape", "Galaxy"],

@@ -32,15 +32,18 @@ _FEATURED_PROJECTS = [
 ]
 
 _SUMMARY = (
-    "AI/ML Engineer and Full-Stack Developer specialising in glycomics, "
-    "explainable machine learning, and agentic AI systems. M.Tech in Big "
-    "Data Biology from SASTRA Deemed University (2025, 79.67%). Built "
-    "production-grade platforms - Syncly (MERN + Socket.IO + AWS) and "
-    "GlycanBench (glycoinformatics + MPNN). M.Tech thesis achieved 98.47% "
-    "accuracy in EGFR inhibitor classification for ovarian cancer using "
-    "Gradient Boosting and SHAP. Currently a Junior Software Developer at "
-    "Ceiyone Tech Works (Zoho Partner), building enterprise AI platforms "
-    "including OCR pipelines, WhatsApp automation, and serverless AWS systems."
+    "AI/ML Engineer and Full-Stack Developer specialising in agentic AI "
+    "systems, WhatsApp automation, and explainable machine learning. M.Tech "
+    "in Big Data Biology from SASTRA Deemed University (2025, 79.67%). "
+    "Currently a Junior Software Developer at Ceiyone Tech Works (Zoho "
+    "Partner), building AIORA - a multi-tenant WhatsApp business platform "
+    "spanning a WhatsApp gateway (Oblion), booking and commerce backends, "
+    "n8n-orchestrated AI conversation agents, and operator/customer "
+    "dashboards - and mentoring 2 engineering interns on it. Also built "
+    "production-grade platforms independently: Syncly (MERN + Socket.IO + "
+    "AWS) and GlycanBench (glycoinformatics + MPNN). M.Tech thesis achieved "
+    "98.47% accuracy in EGFR inhibitor classification for ovarian cancer "
+    "using Gradient Boosting and SHAP."
 )
 
 
