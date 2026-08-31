@@ -252,7 +252,7 @@
       "company": "Ceiyone Tech Works Pvt. Ltd.",
       "period": "Dec 2025 – Present",
       "type": "Full-time",
-      "overview": "Designing, developing, and maintaining enterprise-grade applications and AI-powered platforms. Work spans backend APIs, WhatsApp automation, AWS cloud deployments, AI/LLM integration, and internal monitoring systems.",
+      "overview": "Designing, developing, and maintaining enterprise-grade applications and AI-powered platforms — including AIORA, a multi-tenant WhatsApp business platform (bookings, storefronts, and n8n-driven AI conversations). Work spans backend APIs, WhatsApp automation, AWS cloud deployments, AI/LLM integration, and internal monitoring systems. Also mentoring 2 engineering interns on the AIORA platform.",
       "projects": [
         {
           "name": "Bullion Handler",
@@ -271,8 +271,38 @@
         },
         {
           "name": "Oblion",
-          "description": "WhatsApp QR-based authentication and session management platform with webhook integration and n8n connectivity.",
-          "tech": ["Node.js", "PostgreSQL", "WhatsApp Web API", "n8n"]
+          "description": "Multi-number WhatsApp gateway: one whatsapp-web.js session per business number, BullMQ-queued outbound sends with retries and a dead-letter queue, HMAC-signed inbound webhooks feeding n8n.",
+          "tech": ["TypeScript", "Node.js", "Express.js", "BullMQ", "Redis", "PostgreSQL", "WhatsApp Web API", "n8n"]
+        },
+        {
+          "name": "meridian-api",
+          "description": "Shared service layer every AIORA WhatsApp conversation runs through: slot availability, bookings, operator-authored intake questions, per-agent bot configuration, broadcast campaigns, document ingest, and the single outbound /send endpoint that formats every WhatsApp reply.",
+          "tech": ["Node.js", "Express.js", "PostgreSQL", "Joi", "Winston"]
+        },
+        {
+          "name": "Meridian",
+          "description": "Customer-facing appointment booking page, pre-filled from WhatsApp, backed by meridian-api for slots and intake questions. Recently integrated Healthora's dietician-appointment booking flow into Meridian, consolidating both products onto one booking experience.",
+          "tech": ["React 19", "Vite", "Tailwind CSS"]
+        },
+        {
+          "name": "polaris-ui",
+          "description": "Business-owner dashboard for bookings, orders, inventory, bot settings, document uploads, broadcast campaigns, and WhatsApp session status; fans out to meridian-api, Oblion, and ecomm-api, proxying e-commerce calls server-side so the API key never reaches the browser.",
+          "tech": ["React 19", "Vite", "Tailwind CSS", "Node.js"]
+        },
+        {
+          "name": "AIORA E-Commerce",
+          "description": "Next.js storefront platform where several shops can share one WhatsApp number: catalogue, orders with idempotency keys, storefront config, and a customer directory upserted from inbound WhatsApp messages, with order confirmations dispatched via Oblion.",
+          "tech": ["Next.js", "React", "TypeScript", "PostgreSQL"]
+        },
+        {
+          "name": "Client Onboarding Portal",
+          "description": "Operator tool that provisions a client and all of its WhatsApp agents (booking, storefront, or both) in a single all-or-nothing transaction: client, agents, subscription limits, WhatsApp status, intake questions, and seeded slots either all land or none do.",
+          "tech": ["React", "Vite", "Node.js", "Express.js", "PostgreSQL", "Zod"]
+        },
+        {
+          "name": "AIORA Agent Router (n8n)",
+          "description": "n8n-driven conversation layer letting one WhatsApp number serve multiple bots: a Redis-backed router greets the customer, offers a menu when a business runs more than one bot, and hands off to AI-agent workflows (OpenAI chat model, per-agent Redis memory) that run the booking or shopping conversation end to end.",
+          "tech": ["n8n", "OpenAI", "Redis", "WhatsApp"]
         },
         {
           "name": "Orbit",
@@ -287,10 +317,12 @@
       ],
       "additional_responsibilities": [
         "WhatsApp automation for customer communication and onboarding",
-        "REST API design with FastAPI",
+        "REST API design with FastAPI and Express.js",
         "PostgreSQL and MongoDB management and query optimisation",
+        "Multi-tenant platform design (shared WhatsApp numbers, multi-agent routing)",
         "Server deployment and production maintenance",
-        "IAM, Secrets Manager, CloudWatch configuration on AWS"
+        "IAM, Secrets Manager, CloudWatch configuration on AWS",
+        "Mentoring interns (code review, architecture guidance)"
       ]
     },
     {
