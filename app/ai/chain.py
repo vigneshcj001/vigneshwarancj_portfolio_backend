@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from langchain_core.messages import AIMessage, HumanMessage
@@ -12,8 +13,40 @@ from app.config import GROQ_API_KEY
 # ---------------------------------------------------------------------------
 _DATA_PATH = Path(__file__).parent.parent.parent / "portfolio_data.json"
 
+# Embedded minified: the pretty-printed file alone pushed the system prompt past
+# Groq's free-tier 8K tokens-per-request cap (every call failed with 413).
+# Braces are doubled so the prompt template treats them as literals.
+# Fields whose content is already covered elsewhere (project descriptions,
+# certification topics) are dropped from the prompt view only; the JSON file
+# keeps them for the resume endpoint and other consumers.
+_PROMPT_DROP_KEYS = {"highlights", "features", "stats"}
+_CERT_DROP_KEYS = {"description"}
+_PUB_DROP_KEYS = {"abstract"}
+
+
+def _prompt_view(data: dict) -> dict:
+    view = {k: v for k, v in data.items() if k not in _PROMPT_DROP_KEYS}
+    view["projects"] = {
+        name: {k: v for k, v in proj.items() if k not in _PROMPT_DROP_KEYS}
+        for name, proj in data["projects"].items()
+    }
+    view["certifications"] = [
+        {k: v for k, v in cert.items() if k not in _CERT_DROP_KEYS}
+        for cert in data["certifications"]
+    ]
+    view["publications"] = [
+        {k: v for k, v in pub.items() if k not in _PUB_DROP_KEYS}
+        for pub in data["publications"]
+    ]
+    return view
+
+
 with open(_DATA_PATH, "r", encoding="utf-8") as _f:
-    _portfolio_data = _f.read().replace("{", "{{").replace("}", "}}")
+    _portfolio_data = (
+        json.dumps(_prompt_view(json.load(_f)), separators=(",", ":"), ensure_ascii=False)
+        .replace("{", "{{")
+        .replace("}", "}}")
+    )
 
 # ---------------------------------------------------------------------------
 # System prompt — conversational persona, not rule sheet
@@ -77,7 +110,7 @@ _llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
     model="openai/gpt-oss-120b",
     temperature=0.78,
-    max_tokens=450,
+    max_tokens=400,
 )
 
 _prompt = ChatPromptTemplate.from_messages(

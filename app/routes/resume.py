@@ -19,7 +19,7 @@ _BLACK = (17, 24, 39)
 
 _FEATURED_PROJECTS = [
     "Syncly",
-    "GlycanBench: integrated resource for working with glycans",
+    "GlycanBench: a unified resource for working with glycans",
     (
         "Explainable Machine Learning-Based Approach to Developing "
         "Potent EGFR Inhibitors for Ovarian Cancer"

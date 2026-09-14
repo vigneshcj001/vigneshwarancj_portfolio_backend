@@ -14,6 +14,16 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 LLM_TIMEOUT_SECONDS = 30
+BUSY_MESSAGE = "The assistant is busy right now — please try again in a minute."
+
+
+def _is_capacity_error(exc: Exception) -> bool:
+    """True for Groq 413 (request too large) / 429 (rate limit) responses."""
+    status = getattr(exc, "status_code", None)
+    if status in (413, 429):
+        return True
+    text = str(exc).lower()
+    return "rate_limit" in text or "request too large" in text
 
 
 @router.get("/")
@@ -43,6 +53,9 @@ async def assistant_endpoint(request: Request, payload: AssistantRequest):
         raise HTTPException(status_code=504, detail="Response timed out — please try again.") from exc
 
     except Exception as exc:
+        if _is_capacity_error(exc):
+            logger.warning("LLM capacity error: %s", exc)
+            raise HTTPException(status_code=503, detail=BUSY_MESSAGE) from exc
         logger.exception("Unexpected error in assistant_endpoint: %s", exc)
         raise HTTPException(status_code=500, detail="Failed to generate response") from exc
 

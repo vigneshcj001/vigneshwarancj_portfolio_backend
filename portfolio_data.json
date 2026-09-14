@@ -35,11 +35,24 @@
       "issuer": "NamasteDev",
       "instructor": "Akshay Saini",
       "topics": [
-        "React Hooks", "State Management", "Config Driven UI", "Redux",
-        "Reusable Components", "Props & State", "Class & Functional Components",
-        "Lists & Keys", "React Router", "Optimizations", "Bundlers & Babel",
-        "Code Splitting", "HOCs", "Custom Hooks", "Tailwind CSS",
-        "Jest", "React Testing Library", "Interview Prep"
+        "React Hooks",
+        "State Management",
+        "Config Driven UI",
+        "Redux",
+        "Reusable Components",
+        "Props & State",
+        "Class & Functional Components",
+        "Lists & Keys",
+        "React Router",
+        "Optimizations",
+        "Bundlers & Babel",
+        "Code Splitting",
+        "HOCs",
+        "Custom Hooks",
+        "Tailwind CSS",
+        "Jest",
+        "React Testing Library",
+        "Interview Prep"
       ],
       "description": "Hands-on React course covering React Hooks, State Management, Config Driven UI, Redux, Reusable Components, Props & State, Class & Functional Components, Lists & Keys, React Router, Optimizations, Bundlers & Babel, Code Splitting, HOCs, Custom Hooks, Tailwind CSS, Jest, React Testing Library, and building scalable production-ready apps."
     },
@@ -48,10 +61,21 @@
       "issuer": "NamasteDev",
       "instructor": "Akshay Saini",
       "topics": [
-        "Event Loop", "libuv", "V8 Engine", "Async Programming", "Modules",
-        "REST APIs", "Express.js", "MongoDB & Mongoose", "JWT",
-        "Security Best Practices", "Error Handling", "WebSockets",
-        "AWS Deployment", "Nginx", "Scaling & Performance"
+        "Event Loop",
+        "libuv",
+        "V8 Engine",
+        "Async Programming",
+        "Modules",
+        "REST APIs",
+        "Express.js",
+        "MongoDB & Mongoose",
+        "JWT",
+        "Security Best Practices",
+        "Error Handling",
+        "WebSockets",
+        "AWS Deployment",
+        "Nginx",
+        "Scaling & Performance"
       ],
       "description": "Node.js fundamentals to advanced concepts including Event Loop, libuv, V8 engine, async programming, modules, REST APIs, Express.js, MongoDB & Mongoose, authentication with JWT, security best practices, error handling, deployment (AWS, Nginx), real-time apps with WebSockets, and scaling strategies & performance optimization."
     }
@@ -66,16 +90,22 @@
   "publications": [
     {
       "id": "glycanbench",
-      "title": "GlycanBench: integrated resource for working with glycans",
-      "authors": "Vigneshwaran CJ",
+      "title": "GlycanBench: a unified resource for working with glycans",
+      "authors": "Vigneshwaran CJ & Ashok Palaniappan",
       "guide": "Ashok Palaniappan",
       "institution": "Systems Computational Biology Lab, SASTRA Deemed University",
-      "year": "2025",
+      "year": "2026",
       "status": "Submitted — Frontiers in Systems Biology",
       "type": "Research Paper",
       "context": "PG M.Tech · Main Project",
-      "abstract": "Comprehensive glycoinformatics platform covering glycan creation, 2D/3D visualisation, comparative fingerprint analysis (Morgan, AtomPair, Torsion, RDKit), sequence alignment, hierarchical/k-means clustering with outlier detection, and an optimised MPNN model for immunogenicity prediction with explainable outputs.",
-      "tags": ["Glycomics", "MPNN", "Python", "Bioinformatics", "RDKit"],
+      "abstract": "Unified glycoinformatics web server and Python package covering glycan creation, 2D/3D visualisation, fingerprint comparison (Morgan, AtomPair, Torsion, RDKit), GLYSUM sequence alignment, hierarchical/k-means clustering with outlier detection, an MPNN immunogenicity classifier with confidence scores and motif flags, and a glycomics chat assistant with live PubMed, ArXiv and GlyTouCan tools. Freely available for academic and non-profit use.",
+      "tags": [
+        "Glycomics",
+        "MPNN",
+        "Python",
+        "Bioinformatics",
+        "RDKit"
+      ],
       "link": "https://glycanbench.sastra.edu/"
     },
     {
@@ -88,7 +118,14 @@
       "type": "Thesis",
       "context": "PG M.Tech Big Data Biology · Thesis & Mini Project",
       "abstract": "Explainable ML framework to identify potent EGFR inhibitors for ovarian cancer. 310 compounds from ChEMBL encoded with RDKit and Mordred (1833 to 179 features via LASSO). Gradient Boosting 98.47%, Random Forest 98.28% (AUC~1.00). SHAP plots identified key descriptors: PEOE_VSA9, SM_VSA10, fr_bicyclic.",
-      "tags": ["Drug Discovery", "SHAP", "EGFR", "Ovarian Cancer", "Gradient Boosting", "RDKit"]
+      "tags": [
+        "Drug Discovery",
+        "SHAP",
+        "EGFR",
+        "Ovarian Cancer",
+        "Gradient Boosting",
+        "RDKit"
+      ]
     },
     {
       "id": "lignocellulosic",
@@ -100,7 +137,13 @@
       "type": "UG Project",
       "context": "UG B.Tech Biotechnology · Main Project",
       "abstract": "ML models (Decision Tree, Random Forest, LGBM) trained on 20 lignocellulosic biomass samples pretreated with nanotechnology and ionic liquids to predict biomass composition and ethanol yield. BFuel web platform for dataset hosting.",
-      "tags": ["Bioethanol", "Random Forest", "LGBM", "Decision Tree", "Biomass"]
+      "tags": [
+        "Bioethanol",
+        "Random Forest",
+        "LGBM",
+        "Decision Tree",
+        "Biomass"
+      ]
     },
     {
       "id": "guazuma",
@@ -112,74 +155,209 @@
       "type": "UG Project",
       "context": "UG B.Tech Biotechnology · Mini Project",
       "abstract": "Investigated Guazuma ulmifolia fruits as biofuel feedstock via petroleum ether solvent extraction, emulsion and acrolein lipid assays, and H2SO4 acid hydrolysis for fermentable sugar testing. No lipids detected; carbohydrates confirmed — supports bioethanol pathway.",
-      "tags": ["Biofuel", "Biomass", "Bioethanol", "Guazuma ulmifolia"]
+      "tags": [
+        "Biofuel",
+        "Biomass",
+        "Bioethanol",
+        "Guazuma ulmifolia"
+      ]
     }
   ],
   "skills": {
-    "Programming Languages": ["Python", "R", "SQL", "JavaScript", "TypeScript"],
-    "Data Science & ML": ["Pandas", "NumPy", "Scikit-Learn", "PyTorch", "TensorFlow", "SHAP"],
-    "Frontend Development": ["React.js", "Next.js", "Redux", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
-    "Backend Development": ["Node.js", "Express.js", "Flask", "FastAPI", "Streamlit", "Socket.IO", "BullMQ"],
-    "Databases": ["MongoDB", "PostgreSQL", "DynamoDB", "Oracle", "Redis"],
-    "Cloud & DevOps": ["AWS EC2", "AWS SES", "Google Cloud", "Firebase"],
-    "AI & LLMs": ["GPT-4", "LangChain", "LangGraph", "Groq", "Agentic AI"],
-    "Bioinformatics & Research": ["RDKit", "Mordred", "Glycomics", "Cytoscape", "Galaxy"],
-    "Tools": ["Git", "GitHub", "n8n", "Postman", "Jupyter Notebook", "Linux", "Vim", "Arduino", "Photoshop", "macOS"]
+    "Programming Languages": [
+      "Python",
+      "R",
+      "SQL",
+      "JavaScript",
+      "TypeScript"
+    ],
+    "Data Science & ML": [
+      "Pandas",
+      "NumPy",
+      "Scikit-Learn",
+      "PyTorch",
+      "TensorFlow",
+      "SHAP"
+    ],
+    "Frontend Development": [
+      "React.js",
+      "Next.js",
+      "Redux",
+      "HTML5",
+      "CSS3",
+      "Tailwind CSS",
+      "Bootstrap"
+    ],
+    "Backend Development": [
+      "Node.js",
+      "Express.js",
+      "FastAPI",
+      "Flask",
+      "Streamlit",
+      "Socket.IO",
+      "BullMQ",
+      "Mongoose"
+    ],
+    "Databases": [
+      "MongoDB",
+      "PostgreSQL",
+      "DynamoDB",
+      "Oracle",
+      "Redis"
+    ],
+    "Cloud & DevOps": [
+      "AWS EC2",
+      "AWS SES",
+      "Google Cloud",
+      "Firebase",
+      "Docker",
+      "PM2",
+      "systemd",
+      "nginx",
+      "Render",
+      "Railway"
+    ],
+    "AI & LLMs": [
+      "OpenAI GPT-4o",
+      "LangChain",
+      "LangGraph",
+      "Groq",
+      "Agentic AI"
+    ],
+    "Bioinformatics & Research": [
+      "RDKit",
+      "Mordred",
+      "glycowork",
+      "PyTorch Geometric",
+      "BioPython",
+      "Glycomics",
+      "Cytoscape",
+      "Galaxy"
+    ],
+    "Tools": [
+      "Git",
+      "GitHub",
+      "n8n",
+      "Postman",
+      "Playwright",
+      "Jupyter Notebook",
+      "Linux",
+      "Vim",
+      "Arduino",
+      "Photoshop",
+      "macOS"
+    ]
   },
   "projects": {
     "Syncly": {
       "type": "Full-Stack Web Application",
-      "subtitle": "Professional Networking Platform",
-      "description": "Syncly is a full-stack professional networking platform Vigneshwaran built from scratch, designed to help individuals, researchers, and professionals across diverse sectors (Tech, Biology, Commerce, IT, and more) connect, collaborate, and share projects. Unlike traditional networking apps, Syncly emphasises real collaboration through swipe-based matchmaking (right swipe = Vibe to connect, left swipe = Ghost to skip), real-time chat via Socket.IO with typing indicators and active user tracking, a custom portfolio builder (users generate a professional responsive portfolio by filling out forms — no coding required), AWS SES integration for onboarding and notification emails with cron-based daily collaboration summaries, and scalable modular REST APIs. Deployed on AWS EC2.",
-      "tech_stack": ["React.js", "Redux", "Tailwind CSS", "Node.js", "Express.js", "MongoDB", "Socket.IO", "AWS EC2", "AWS SES", "Node-cron", "Radix UI"],
-      "role": "Solo full-stack development, backend APIs, AWS deployment",
+      "subtitle": "Developer Networking Platform",
+      "description": "Developer-to-developer networking platform built solo end to end. Members pick a mentorship role (mentor, learner, both), swipe a paginated feed of developers they have not met (Vibe to connect, Ghost to pass); the recipient replies Link or Noped, and a mutual Link unlocks real-time 1:1 chat over Socket.IO with persisted history. Each member gets a shareable portfolio page at their slug (projects, experience, education, certifications, theme, SEO, visibility). httpOnly JWT cookie auth with bcrypt; AWS SES email on every swipe plus a daily 08:00 node-cron reminder for pending Vibes. Loop: Discover → Vibe → Link → Chat → Showcase.",
+      "tech_stack": [
+        "React 19",
+        "Vite",
+        "Redux Toolkit",
+        "React Router 7",
+        "Tailwind CSS 4",
+        "daisyUI",
+        "Axios",
+        "Node.js",
+        "Express 5",
+        "MongoDB",
+        "Mongoose",
+        "Socket.IO",
+        "JWT",
+        "bcrypt",
+        "AWS SES",
+        "node-cron",
+        "AWS EC2"
+      ],
+      "role": "Solo full-stack development: React SPA, REST + WebSocket API, data model, email automation, deployment",
       "live_link": "https://syncly.co.in",
       "github_frontend": "https://github.com/vigneshcj001/Syncly_fronend",
       "github_backend": "https://github.com/vigneshcj001/Syncly_Backend",
       "highlights": [
-        "Swipe-based matchmaking (Vibe/Ghost)",
-        "Real-time chat with typing indicators and active user tracking",
-        "Custom no-code portfolio builder",
-        "AWS SES email automation with daily cron summaries",
+        "Swipe matchmaking: Vibe/Ghost by initiator, Link/Noped by recipient; one swipe per pair enforced by a unique compound index",
+        "Real-time 1:1 chat via Socket.IO; rooms keyed by SHA-256 of the sorted user-ID pair; history persisted in MongoDB",
+        "No-code portfolio page per user with theme, SEO metadata and visibility flag, served by profile slug",
+        "AWS SES email on each swipe plus a daily 08:00 node-cron reminder for pending Vibes",
+        "httpOnly JWT cookie auth, bcrypt (cost 12), strong-password and URL validation",
         "Deployed on AWS EC2"
       ]
     },
-    "GlycanBench: integrated resource for working with glycans": {
+    "GlycanBench: a unified resource for working with glycans": {
       "type": "AI/Research Platform",
-      "subtitle": "Glycoinformatics Web-Server · SASTRA University",
-      "description": "GlycanBench is a comprehensive glycoinformatics platform and Python package developed by Vigneshwaran CJ under the guidance of Ashok Palaniappan at the Systems Computational Biology Lab, SASTRA Deemed University. Glycans are monosaccharide polymers fundamental to life, playing pivotal roles in immunity and all major human diseases. Most host-pathogen interactions depend on glycan structures. GlycanBench covers the full glycan research workflow: creation (glycan molecules, biosynthetic networks, format conversion), visualisation (2D draw, 3D representation, KEGG pathway view), analysis (monosaccharide/glycan characterisation, descriptor generation, motif mutation), comparative analysis via molecular fingerprints (Morgan r=2/3, AtomPair, Torsion, RDKit), sequence alignment with custom scoring, hierarchical/k-means clustering with outlier detection, an optimised MPNN model for immunogenicity prediction with explainable outputs, and a glycobiology chat interface. All tools provide publication-quality visualisation. Freely available as a web-server and Python package for academic and non-profit use.",
-      "tech_stack": ["Python", "FastAPI", "Flask", "React.js", "Tailwind CSS", "PyTorch", "MPNN", "RDKit"],
+      "subtitle": "Glycoinformatics Web Server + Python Package · SASTRA University",
+      "description": "Full-stack glycoinformatics platform and installable Python package (glycanbench: SDK, CLI, server) built under Ashok Palaniappan at SASTRA's Systems Computational Biology Lab; live at glycanbench.sastra.edu. Eight tool groups behind one React UI and one FastAPI API: Create (click-to-build glycans with SNFG 2D + 3D conformers via ETKDGv3/MMFF94s, Cytoscape.js biosynthetic networks, IUPAC/WURCS/GlycoCT/SMILES conversion), Visualize (2D SNFG, 3Dmol.js, KEGG pathways), Analyse (characterisation, GlyTouCan insight, RDKit descriptors + fingerprints, motif mutation), Compare (Tanimoto over 5 fingerprints), Align (Needleman-Wunsch with GLYSUM), Cluster (agglomerative/K-means, elbow, outliers), Predict (PyTorch Geometric MPNN immunogenicity classifier, 1,356-glycan dataset, confidence + motif flags), Chat (GlycomicsChat on Groq gpt-oss-120b with an LLM tool router over PubMed, ArXiv, GlyTouCan). 20 routes, ~30 endpoints.",
+      "tech_stack": [
+        "Python",
+        "FastAPI",
+        "Pydantic",
+        "React 19",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS 4",
+        "PyTorch",
+        "PyTorch Geometric",
+        "RDKit",
+        "glycowork",
+        "glypy",
+        "BioPython",
+        "scikit-learn",
+        "SciPy",
+        "LangChain",
+        "Groq",
+        "3Dmol.js",
+        "Cytoscape.js",
+        "Chart.js"
+      ],
       "developer": "Vigneshwaran CJ",
       "guide": "Ashok Palaniappan",
       "institution": "Systems Computational Biology Lab, Bioinformatics Center, School of Chemical & Biotechnology, SASTRA Deemed University",
       "contact": "apalania@scbt.sastra.edu",
-      "citation": "GlycanBench: integrated resource for working with glycans (submitted)",
-      "role": "Full-stack development, ML model integration, glycoinformatics pipeline",
+      "citation": "Vigneshwaran CJ & Ashok Palaniappan. GlycanBench: a unified resource for working with glycans, 2026 [submitted]",
+      "role": "Full-stack development, ML model integration, glycoinformatics pipeline, Python package",
       "live_link": "https://glycanbench.sastra.edu/",
       "github": "https://github.com/APalaniaLab/GlycanBench",
       "features": [
-        "Create: glycan molecules, biosynthetic networks, format conversion",
-        "Visualise: 2D draw, 3D representation, KEGG pathway view",
-        "Analyse: monosaccharide/glycan characterisation, descriptor generation, motif mutation",
-        "Compare: fingerprint-based pair comparison (Morgan, AtomPair, Torsion, RDKit)",
-        "Align: glycan sequences with custom scoring",
-        "Cluster: hierarchical/k-means, outlier detection, optimal cluster number",
-        "Predict: MPNN immunogenicity prediction with explainable output",
-        "Chat: glycobiology literature interface"
+        "Create: Glycan Molecule builder (SNFG 2D + 3D conformer), Biosynthetic Networks (Cytoscape.js), Format Converter (IUPAC/WURCS/GlycoCT/SMILES)",
+        "Visualize: 2D SNFG draw with motif highlight, 3D viewer (3Dmol.js, 4 styles), KEGG pathway maps with search",
+        "Analyse: Monosaccharide characterisation, Glycan Insight (species, phyla, motifs, diseases, GlyTouCan ID), Molecule Descriptors, Motif Mutation",
+        "Compare: Tanimoto similarity across Morgan R2/R3, AtomPair, Torsion and RDKit fingerprints",
+        "Align: Needleman-Wunsch with GLYSUM glycan substitution matrix or custom scoring",
+        "Cluster: agglomerative/K-means with Tanimoto/Dice/Cosine/Euclidean/glycowork metrics, elbow plot, outlier detection",
+        "Predict: MPNN immunogenicity with confidence score and rule-based motif flags",
+        "Chat: GlycomicsChat — Groq gpt-oss-120b, LLM tool router over PubMed, ArXiv, GlyTouCan",
+        "Python package: glycanbench SDK, CLI and server modes (MIT)"
       ]
     },
     "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer": {
       "type": "Research / Explainable ML",
       "subtitle": "M.Tech Thesis · Explainable AI · Drug Discovery",
       "description": "Vigneshwaran's M.Tech thesis developing an explainable ML framework to identify potent EGFR inhibitors for ovarian cancer. EGFR is a key therapeutic target — its overexpression drives uncontrolled cancer cell proliferation. 310 compounds sourced from ChEMBL (EGFR Target ID: CHEMBL3009) were encoded with RDKit and Mordred molecular descriptors (1833 → 179 features via LASSO selection). Six classifiers evaluated: Gradient Boosting (98.47% accuracy, AUC=1.00), Random Forest (98.28%, AUC≈1.00), SVM (AUC=0.99), Logistic Regression, KNN, Naive Bayes. SHAP force and waterfall plots identified key activity-driving descriptors: PEOE_VSA9, SM_VSA10, fr_bicyclic, BCUT2D_MRLOW. Binary classification: Active (IC50 ≤ 1000 nM) vs Inactive (IC50 ≥ 10000 nM).",
-      "tech_stack": ["Python", "Scikit-Learn", "RDKit", "Mordred", "SHAP", "Gradient Boosting", "Random Forest", "ChEMBL"],
+      "tech_stack": [
+        "Python",
+        "Scikit-Learn",
+        "RDKit",
+        "Mordred",
+        "SHAP",
+        "Gradient Boosting",
+        "Random Forest",
+        "ChEMBL"
+      ],
       "thesis_details": {
         "dataset": "310 molecules from ChEMBL, EGFR target CHEMBL3009",
         "descriptors": "RDKit + Mordred, 1833 initial → 179 after LASSO feature selection",
         "best_model": "Gradient Boosting — 98.47% accuracy, AUC = 1.00",
         "second_best": "Random Forest — 98.28% accuracy, AUC ≈ 1.00",
         "xai_tool": "SHAP (force plots + waterfall plots)",
-        "key_descriptors": ["PEOE_VSA9", "SM_VSA10", "fr_bicyclic", "pIC50", "BCUT2D_MRLOW"],
+        "key_descriptors": [
+          "PEOE_VSA9",
+          "SM_VSA10",
+          "fr_bicyclic",
+          "pIC50",
+          "BCUT2D_MRLOW"
+        ],
         "institution": "SASTRA Deemed University, M.Tech Big Data Biology"
       }
     },
@@ -187,7 +365,14 @@
       "type": "Research / ML",
       "subtitle": "ML for Green Energy · Biomass Pretreatment",
       "description": "This study explores efficient bioethanol production from waste biomass using an integrated approach of nanotechnology, green pretreatment methods, and machine learning. Twenty different lignocellulosic biomass samples (mainly fruit peels and agro-wastes) were pretreated using physical, chemical, and novel physicochemical methods — including nanocatalyst-assisted ionic liquid combined with ultrasound — to extract fermentable sugars. Iron nanoparticles synthesised from Musa acuminata peels improved biomass breakdown. Machine learning models — Decision Tree, Random Forest, and LGBM — were trained on experimental data to predict biomass composition and ethanol yield. Random Forest and Decision Tree showed high accuracy in predicting lignocellulosic content and sugar yield. A BFuel web platform was developed to store and display experimental data.",
-      "tech_stack": ["Python", "Scikit-Learn", "Random Forest", "LGBM", "Decision Tree", "Web Development"],
+      "tech_stack": [
+        "Python",
+        "Scikit-Learn",
+        "Random Forest",
+        "LGBM",
+        "Decision Tree",
+        "Web Development"
+      ],
       "key_contributions": [
         "Eco-friendly biomass pretreatment using nanotechnology and ionic liquids",
         "Multiple ML algorithms for predictive modeling of biomass composition and ethanol yield",
@@ -198,7 +383,17 @@
       "type": "Research / Pharmaceutical ML",
       "subtitle": "Drug Solubility Prediction · Manipal Institute of Technology",
       "description": "Developed at Manipal Institute of Technology (supervised by Dr. Neha Sureshchandra Gandhi) as part of a research internship. Built ML-based QSPR models to predict Posaconazole solubility in Self-Emulsifying Drug Delivery Systems (SEDDS). Dataset consisted of oils, surfactants, co-surfactants, and drug compositions. 50+ molecular descriptors generated with RDKit; VIF analysis reduced to 10 key descriptors: ELUMO, EHOMO, MaxQ-, MaxQ+, MinPartialCharge, MaxPartialCharge, MinAbsPartialCharge, FpDensityMorgan2, PEOE_VSA1, HallKierAlpha. Random Forest achieved R²=0.865, outperforming PLS (0.733), Linear Regression (0.740), SVM (0.630), and KNN (0.590).",
-      "tech_stack": ["Python", "RDKit", "Scikit-Learn", "Random Forest", "PLS", "Linear Regression", "SVM", "KNN", "Mordred"],
+      "tech_stack": [
+        "Python",
+        "RDKit",
+        "Scikit-Learn",
+        "Random Forest",
+        "PLS",
+        "Linear Regression",
+        "SVM",
+        "KNN",
+        "Mordred"
+      ],
       "results": {
         "Random Forest": "R² = 0.865",
         "Linear Regression": "R² = 0.740",
@@ -213,14 +408,23 @@
       "type": "Research / Bioenergy",
       "subtitle": "Biofuel Feedstock Evaluation",
       "description": "Investigated the potential of Guazuma ulmifolia (West Indian Elm) fruits as a feedstock for biofuel production. Fruits were ground into powder and extracted using solvent extraction with petroleum ether. Confirmatory tests for lipids (emulsion and acrolein assays) were performed on the solvent-vaporised residue. The processed biomass was subjected to H₂SO₄ acid hydrolysis followed by heat treatment and tested for fermentable sugars. The sample contained no lipids but did contain carbohydrates, supporting bioethanol potential over biodiesel. Future work focuses on comparative analysis of solvent extraction versus nano-catalysts and enzymatic pretreatment for improved sugar yield.",
-      "tech_stack": ["Bioinformatics", "Research", "Bioethanol Analysis", "Biomass Pretreatment"],
+      "tech_stack": [
+        "Bioinformatics",
+        "Research",
+        "Bioethanol Analysis",
+        "Biomass Pretreatment"
+      ],
       "findings": "No lipids detected; carbohydrates confirmed — supports bioethanol over biodiesel pathway"
     },
     "CJFoods": {
       "type": "Frontend",
       "subtitle": "React.js Food Delivery App",
       "description": "Frontend-only React.js SPA consuming the Swiggy API in real time. No backend, no database — displays live restaurant listings, menus, and filters with a responsive, performance-optimised UI.",
-      "tech_stack": ["React.js", "Swiggy API", "JavaScript"],
+      "tech_stack": [
+        "React.js",
+        "Swiggy API",
+        "JavaScript"
+      ],
       "live_link": "https://cj-foods.vercel.app/",
       "github": "https://github.com/vigneshcj001/CJFoods"
     },
@@ -228,7 +432,11 @@
       "type": "Frontend",
       "subtitle": "Responsive Landing Page",
       "description": "A playful dog-dating website built with Bootstrap and HTML, designed to master responsive layout and component patterns.",
-      "tech_stack": ["Bootstrap", "HTML", "CSS"],
+      "tech_stack": [
+        "Bootstrap",
+        "HTML",
+        "CSS"
+      ],
       "live_link": "https://tindog-for-dogs.vercel.app/",
       "github": "https://github.com/vigneshcj001/Tindog_for_dogs"
     },
@@ -236,7 +444,12 @@
       "type": "Hardware / Robotics",
       "subtitle": "Autonomous Singing Biped Robot",
       "description": "CJBoT (Cookie) is an autonomous singing biped robot built on Arduino Nano ATMEGA328. It detects obstacles with sensors and navigates independently while performing.",
-      "tech_stack": ["Arduino", "C++", "Robotics", "Sensors"],
+      "tech_stack": [
+        "Arduino",
+        "C++",
+        "Robotics",
+        "Sensors"
+      ],
       "live_link": "https://www.instagram.com/reel/C1Qg2iCy7D-/"
     }
   },
@@ -252,67 +465,150 @@
       "company": "Ceiyone Tech Works Pvt. Ltd.",
       "period": "Dec 2025 – Present",
       "type": "Full-time",
-      "overview": "Designing, developing, and maintaining enterprise-grade applications and AI-powered platforms — including AIORA, a multi-tenant WhatsApp business platform (bookings, storefronts, and n8n-driven AI conversations). Work spans backend APIs, WhatsApp automation, AWS cloud deployments, AI/LLM integration, and internal monitoring systems. Also mentoring 2 engineering interns on the AIORA platform.",
+      "overview": "Designing, developing, and maintaining enterprise-grade applications and AI-powered platforms — including AIORA, a multi-tenant WhatsApp business platform of 14 services (bookings, storefronts, n8n-driven AI conversations) running on a shared Hostinger VPS under systemd/PM2 behind nginx, with Render- and Railway-hosted front ends. Work spans backend APIs, WhatsApp automation, cloud deployments, AI/LLM integration, and internal monitoring. Also mentoring 2 engineering interns on the AIORA platform.",
       "projects": [
         {
           "name": "Bullion Handler",
-          "description": "Core AI document processing platform: document upload, OCR extraction, AI analysis, validation, report generation, OpenAI token tracking.",
-          "tech": ["Python", "FastAPI", "PostgreSQL", "OpenAI"]
+          "description": "FastAPI service that reads gold-shipment AWB and invoice PDFs with GPT-4o vision, then runs a two-stage rules engine — Stage 1 checks the invoice alone (weight, purity, calculations), Stage 2 compares it against its matched AWB — and produces bilingual EN/ES PDF reports delivered by email. PostgreSQL for records, Redis Streams/Pub-Sub for job pickup and SHA-256 dedup.",
+          "tech": [
+            "Python",
+            "FastAPI",
+            "OpenAI GPT-4o",
+            "PostgreSQL",
+            "Redis",
+            "ReportLab",
+            "systemd"
+          ]
         },
         {
           "name": "Bullion Listener",
-          "description": "Event-driven service monitoring incoming events, validating payloads, and triggering Bullion Handler processing pipelines asynchronously.",
-          "tech": ["Python", "FastAPI", "PostgreSQL"]
+          "description": "Node.js WhatsApp bot bridging group chats and Bullion Handler: saves incoming PDFs to the shared filesystem, hands them to the Python service via HTTP/n8n, and watches report directories with chokidar to deliver finished reports back to the originating group.",
+          "tech": [
+            "Node.js",
+            "whatsapp-web.js",
+            "Chokidar",
+            "Redis",
+            "PM2"
+          ]
         },
         {
           "name": "Splendor",
-          "description": "Centralized OpenAI token and subscription management: tracks prompt/completion tokens per model, manages quotas, sends WhatsApp alert notifications.",
-          "tech": ["Python", "FastAPI", "PostgreSQL", "WhatsApp API"]
+          "description": "Express 5 REST API that meters AI token consumption and subscription quotas per client/agent, enforces plan limits, and fires low-balance WhatsApp alerts through Oblion with a 4-hour cooldown. OpenAPI docs at /api-docs.",
+          "tech": [
+            "Node.js",
+            "Express.js",
+            "PostgreSQL",
+            "Joi",
+            "Winston",
+            "Swagger/OpenAPI",
+            "Docker",
+            "PM2"
+          ]
         },
         {
           "name": "Oblion",
           "description": "Multi-number WhatsApp gateway: one whatsapp-web.js session per business number, BullMQ-queued outbound sends with retries and a dead-letter queue, HMAC-signed inbound webhooks feeding n8n.",
-          "tech": ["TypeScript", "Node.js", "Express.js", "BullMQ", "Redis", "PostgreSQL", "WhatsApp Web API", "n8n"]
+          "tech": [
+            "TypeScript",
+            "Node.js",
+            "Express.js",
+            "BullMQ",
+            "Redis",
+            "PostgreSQL",
+            "WhatsApp Web API",
+            "n8n"
+          ]
         },
         {
           "name": "meridian-api",
           "description": "Shared service layer every AIORA WhatsApp conversation runs through: slot availability, bookings, operator-authored intake questions, per-agent bot configuration, broadcast campaigns, document ingest, and the single outbound /send endpoint that formats every WhatsApp reply.",
-          "tech": ["Node.js", "Express.js", "PostgreSQL", "Joi", "Winston"]
+          "tech": [
+            "Node.js",
+            "Express.js",
+            "PostgreSQL",
+            "Joi",
+            "Winston"
+          ]
         },
         {
           "name": "Meridian",
           "description": "Customer-facing appointment booking page, pre-filled from WhatsApp, backed by meridian-api for slots and intake questions. Recently integrated Healthora's dietician-appointment booking flow into Meridian, consolidating both products onto one booking experience.",
-          "tech": ["React 19", "Vite", "Tailwind CSS"]
+          "tech": [
+            "React 19",
+            "Vite",
+            "Tailwind CSS"
+          ]
         },
         {
           "name": "polaris-ui",
-          "description": "Business-owner dashboard for bookings, orders, inventory, bot settings, document uploads, broadcast campaigns, and WhatsApp session status; fans out to meridian-api, Oblion, and ecomm-api, proxying e-commerce calls server-side so the API key never reaches the browser.",
-          "tech": ["React 19", "Vite", "Tailwind CSS", "Node.js"]
+          "description": "Business-owner dashboard fanning out to four backends (healthora-api, meridian-api, Oblion, ecomm-api): bookings, orders, inventory, bot settings, document uploads, broadcast campaigns, WhatsApp session status, a Shiprocket connection page, and a home dashboard of revenue, booking/order status, low-stock and campaign charts. E-commerce calls are proxied server-side so the API key never reaches the browser.",
+          "tech": [
+            "React 19",
+            "TypeScript",
+            "Vite",
+            "Tailwind CSS",
+            "Axios",
+            "Node.js",
+            "Railway"
+          ]
         },
         {
           "name": "AIORA E-Commerce",
-          "description": "Next.js storefront platform where several shops can share one WhatsApp number: catalogue, orders with idempotency keys, storefront config, and a customer directory upserted from inbound WhatsApp messages, with order confirmations dispatched via Oblion.",
-          "tech": ["Next.js", "React", "TypeScript", "PostgreSQL"]
+          "description": "Next.js 16 multi-store commerce platform where several shops share one WhatsApp number: catalogue, orders with idempotency keys, storefront config, a customer directory upserted from inbound WhatsApp, order confirmations via Oblion, and per-client Shiprocket shipping — orders sync when marked ready, a deduplicated webhook normalises ~30 courier statuses into 8, and customers get shipped / out-for-delivery / delivered WhatsApp updates. Credentials stored AES-256-GCM.",
+          "tech": [
+            "Next.js 16",
+            "React 19",
+            "TypeScript",
+            "PostgreSQL",
+            "Tailwind CSS",
+            "Shiprocket API"
+          ]
         },
         {
           "name": "Client Onboarding Portal",
-          "description": "Operator tool that provisions a client and all of its WhatsApp agents (booking, storefront, or both) in a single all-or-nothing transaction: client, agents, subscription limits, WhatsApp status, intake questions, and seeded slots either all land or none do.",
-          "tech": ["React", "Vite", "Node.js", "Express.js", "PostgreSQL", "Zod"]
+          "description": "Operator tool that provisions a client and all of its WhatsApp agents (booking, storefront, or both) in a single all-or-nothing transaction: client, agents, subscription limits, WhatsApp status, intake questions, seeded slots, storefronts and optional Shiprocket config either all land or none do; failures name the module that broke.",
+          "tech": [
+            "React 18",
+            "Vite",
+            "shadcn/ui",
+            "Node.js",
+            "Express.js",
+            "PostgreSQL",
+            "Zod",
+            "Nodemailer"
+          ]
         },
         {
           "name": "AIORA Agent Router (n8n)",
           "description": "n8n-driven conversation layer letting one WhatsApp number serve multiple bots: a Redis-backed router greets the customer, offers a menu when a business runs more than one bot, and hands off to AI-agent workflows (OpenAI chat model, per-agent Redis memory) that run the booking or shopping conversation end to end.",
-          "tech": ["n8n", "OpenAI", "Redis", "WhatsApp"]
+          "tech": [
+            "n8n",
+            "OpenAI",
+            "Redis",
+            "WhatsApp"
+          ]
         },
         {
           "name": "Orbit",
-          "description": "Centralized monitoring dashboard aggregating health checks, system diagnostics, API status, and incident detection across all services.",
-          "tech": ["Python", "FastAPI", "ReactJS"]
+          "description": "Express utility service that aggregates health across all AIORA services via GET /api/health/all and scrapes the OpenAI account balance with Playwright for billing visibility.",
+          "tech": [
+            "Node.js",
+            "Express.js",
+            "Playwright",
+            "PM2"
+          ]
         },
         {
           "name": "Gluzo",
           "description": "Cloud-native AWS application using Lambda, API Gateway, DynamoDB, IAM, CloudWatch, Secrets Manager, and EC2 for serverless backend operations.",
-          "tech": ["AWS Lambda", "API Gateway", "DynamoDB", "IAM", "CloudWatch", "Python"]
+          "tech": [
+            "AWS Lambda",
+            "API Gateway",
+            "DynamoDB",
+            "IAM",
+            "CloudWatch",
+            "Python"
+          ]
         }
       ],
       "additional_responsibilities": [
@@ -320,7 +616,7 @@
         "REST API design with FastAPI and Express.js",
         "PostgreSQL and MongoDB management and query optimisation",
         "Multi-tenant platform design (shared WhatsApp numbers, multi-agent routing)",
-        "Server deployment and production maintenance",
+        "Multi-environment VPS deployment (dev/SIT/prod) with systemd, PM2, nginx and isolated Postgres/Redis",
         "IAM, Secrets Manager, CloudWatch configuration on AWS",
         "Mentoring interns (code review, architecture guidance)"
       ]
@@ -335,32 +631,60 @@
         {
           "name": "AI Weather Agent",
           "description": "Telegram bot answering weather queries via text and voice using OpenAI NLU, real-time weather APIs, and voice-to-text/TTS pipelines.",
-          "tech": ["Python", "Telegram Bot API", "OpenAI", "Weather APIs"]
+          "tech": [
+            "Python",
+            "Telegram Bot API",
+            "OpenAI",
+            "Weather APIs"
+          ]
         },
         {
           "name": "LinkedIn Automation Platform",
           "description": "Automated LinkedIn profile analytics, post scraping, engagement tracking, competitor research, and AI content generation via n8n and Apify.",
-          "tech": ["Apify", "n8n", "Gemini", "Python"]
+          "tech": [
+            "Apify",
+            "n8n",
+            "Gemini",
+            "Python"
+          ]
         },
         {
           "name": "LinkedIn Content Creation Agent",
           "description": "End-to-end AI pipeline: topic research → content drafting → SEO optimisation → hashtag generation → publishing workflow.",
-          "tech": ["n8n", "Gemini", "Python"]
+          "tech": [
+            "n8n",
+            "Gemini",
+            "Python"
+          ]
         },
         {
           "name": "SEO DeepAgent",
           "description": "Automated SEO audit pipelines: competitor analysis, keyword research, traffic insights, AI-generated recommendations using Serpstat.",
-          "tech": ["DeepAgent", "Serpstat", "OpenAI", "Python"]
+          "tech": [
+            "DeepAgent",
+            "Serpstat",
+            "OpenAI",
+            "Python"
+          ]
         },
         {
           "name": "Multi-Agent Financial AI",
           "description": "Multi-agent system for financial analysis and report generation using Groq LLaMA models orchestrated with the Phi Framework.",
-          "tech": ["Groq LLaMA", "Phi Framework", "Python"]
+          "tech": [
+            "Groq LLaMA",
+            "Phi Framework",
+            "Python"
+          ]
         },
         {
           "name": "Business Card OCR System",
           "description": "Automated pipeline for business card OCR extraction, contact validation, MongoDB storage, and CSV export with FastAPI backend and Streamlit UI.",
-          "tech": ["FastAPI", "MongoDB", "Streamlit", "Tesseract OCR"]
+          "tech": [
+            "FastAPI",
+            "MongoDB",
+            "Streamlit",
+            "Tesseract OCR"
+          ]
         }
       ]
     },
@@ -384,7 +708,17 @@
           "SVM": "R² = 0.630",
           "KNN": "R² = 0.590"
         },
-        "tech": ["Python", "RDKit", "Scikit-Learn", "Random Forest", "PLS", "Linear Regression", "SVM", "KNN", "Mordred"]
+        "tech": [
+          "Python",
+          "RDKit",
+          "Scikit-Learn",
+          "Random Forest",
+          "PLS",
+          "Linear Regression",
+          "SVM",
+          "KNN",
+          "Mordred"
+        ]
       },
       "impact": [
         "Reduced dependence on costly and time-consuming laboratory formulation screening",
@@ -405,7 +739,7 @@
   ],
   "stats": {
     "total_projects": 9,
-    "total_skills": 50,
+    "total_skills": 65,
     "experience_note": "Fresher — joined industry Dec 2025 as Junior Software Developer at Ceiyone Tech Works",
     "research_areas": 2,
     "ml_accuracy_peak": "98.2% (GlycanBench immunogenicity prediction)"
