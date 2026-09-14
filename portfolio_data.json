@@ -273,9 +273,7 @@
         "AWS EC2"
       ],
       "role": "Solo full-stack development: React SPA, REST + WebSocket API, data model, email automation, deployment",
-      "live_link": "https://syncly.co.in",
       "github_frontend": "https://github.com/vigneshcj001/Syncly_fronend",
-      "github_backend": "https://github.com/vigneshcj001/Syncly_Backend",
       "highlights": [
         "Swipe matchmaking: Vibe/Ghost by initiator, Link/Noped by recipient; one swipe per pair enforced by a unique compound index",
         "Real-time 1:1 chat via Socket.IO; rooms keyed by SHA-256 of the sorted user-ID pair; history persisted in MongoDB",
@@ -283,7 +281,8 @@
         "AWS SES email on each swipe plus a daily 08:00 node-cron reminder for pending Vibes",
         "httpOnly JWT cookie auth, bcrypt (cost 12), strong-password and URL validation",
         "Deployed on AWS EC2"
-      ]
+      ],
+      "note": "Backend repository is private; the original live domain is no longer active."
     },
     "GlycanBench: a unified resource for working with glycans": {
       "type": "AI/Research Platform",
@@ -318,7 +317,6 @@
       "citation": "Vigneshwaran CJ & Ashok Palaniappan. GlycanBench: a unified resource for working with glycans, 2026 [submitted]",
       "role": "Full-stack development, ML model integration, glycoinformatics pipeline, Python package",
       "live_link": "https://glycanbench.sastra.edu/",
-      "github": "https://github.com/APalaniaLab/GlycanBench",
       "features": [
         "Create: Glycan Molecule builder (SNFG 2D + 3D conformer), Biosynthetic Networks (Cytoscape.js), Format Converter (IUPAC/WURCS/GlycoCT/SMILES)",
         "Visualize: 2D SNFG draw with motif highlight, 3D viewer (3Dmol.js, 4 styles), KEGG pathway maps with search",
@@ -329,7 +327,8 @@
         "Predict: MPNN immunogenicity with confidence score and rule-based motif flags",
         "Chat: GlycomicsChat — Groq gpt-oss-120b, LLM tool router over PubMed, ArXiv, GlyTouCan",
         "Python package: glycanbench SDK, CLI and server modes (MIT)"
-      ]
+      ],
+      "note": "Source is in the lab organisation (APalaniaLab) and private until publication."
     },
     "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer": {
       "type": "Research / Explainable ML",
@@ -741,7 +740,6 @@
     "total_projects": 9,
     "total_skills": 65,
     "experience_note": "Fresher — joined industry Dec 2025 as Junior Software Developer at Ceiyone Tech Works",
-    "research_areas": 2,
-    "ml_accuracy_peak": "98.2% (GlycanBench immunogenicity prediction)"
+    "research_areas": 2
   }
 }
