@@ -169,7 +169,8 @@
       "R",
       "SQL",
       "JavaScript",
-      "TypeScript"
+      "TypeScript",
+      "Rust"
     ],
     "Data Science & ML": [
       "Pandas",
@@ -196,7 +197,8 @@
       "Streamlit",
       "Socket.IO",
       "BullMQ",
-      "Mongoose"
+      "Mongoose",
+      "Tauri"
     ],
     "Databases": [
       "MongoDB",
@@ -215,7 +217,8 @@
       "systemd",
       "nginx",
       "Render",
-      "Railway"
+      "Railway",
+      "GitHub Actions"
     ],
     "AI & LLMs": [
       "OpenAI GPT-4o",
@@ -450,6 +453,41 @@
         "Sensors"
       ],
       "live_link": "https://www.instagram.com/reel/C1Qg2iCy7D-/"
+    },
+    "PocketPet": {
+      "type": "Desktop / Agentic AI",
+      "subtitle": "Desktop Companion + AI Browser Agent",
+      "description": "Tauri 2/Rust desktop companion with JavaScript/SVG pets, games, customisation, and break reminders. A streamed task agent searches, reads pages, and controls a dedicated Chromium profile via CDP. Supports Anthropic and OpenAI-compatible providers including Ollama, with approval gates, secret-field refusal, spend limits, scheduling, and cancellation. Win32/UI Automation window tricks are Windows-only; macOS and Linux provide reduced features. GitHub Actions packages platform installers.",
+      "tech_stack": [
+        "Rust",
+        "Tauri",
+        "JavaScript",
+        "Tokio",
+        "Win32",
+        "Chrome DevTools Protocol",
+        "Agentic AI",
+        "GitHub Actions"
+      ],
+      "live_link": "https://pocketpet-web.vercel.app/",
+      "github": "https://github.com/vigneshcj001/Pocketpet",
+      "limitations": "macOS overlay covers one display; Linux click-through requires X11/XWayland. Approval detection is heuristic, not a guarantee against every sensitive action. OS keychain storage has a restricted-permission file fallback on Linux when no keyring is available."
+    },
+    "PocketPet Website": {
+      "type": "Frontend / Product Website",
+      "subtitle": "Interactive Product Demo + Release Downloads",
+      "description": "Static React 19/TypeScript product site built with Vite and Tailwind CSS 4 on Vercel. Reuses desktop SVG sprites for an interactive pet demo and scrolling companion; React context shares appearance and requestAnimationFrame drives motion. GitHub APIs supply stats, release notes, and OS-specific downloads with release-page fallbacks. Includes keyboard controls, reduced-motion handling, and persistent themes. No application backend; the agent sequence is illustrative.",
+      "tech_stack": [
+        "React.js",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS",
+        "SVG Animation",
+        "GitHub API",
+        "Vercel"
+      ],
+      "live_link": "https://pocketpet-web.vercel.app/",
+      "github": "https://github.com/vigneshcj001/Pocketpet-web",
+      "limitations": "GitHub API availability and release assets determine direct download availability. Browser demo does not run the desktop task agent."
     }
   },
   "employer": {
@@ -737,8 +775,8 @@
     }
   ],
   "stats": {
-    "total_projects": 9,
-    "total_skills": 65,
+    "total_projects": 11,
+    "total_skills": 68,
     "experience_note": "Fresher — joined industry Dec 2025 as Junior Software Developer at Ceiyone Tech Works",
     "research_areas": 2
   }
