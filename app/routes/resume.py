@@ -18,6 +18,7 @@ _GRAY = (107, 114, 128)
 _BLACK = (17, 24, 39)
 
 _FEATURED_PROJECTS = [
+    "PocketPet",
     "Syncly",
     "GlycanBench: a unified resource for working with glycans",
     (
@@ -40,8 +41,9 @@ _SUMMARY = (
     "spanning a WhatsApp gateway (Oblion), booking and commerce backends, "
     "n8n-orchestrated AI conversation agents, and operator/customer "
     "dashboards - and mentoring 2 engineering interns on it. Also built "
-    "production-grade platforms independently: Syncly (MERN + Socket.IO + "
-    "AWS) and GlycanBench (glycoinformatics + MPNN). M.Tech thesis achieved "
+    "production-grade products independently: PocketPet (Tauri/Rust desktop "
+    "companion and browser agent), Syncly (MERN + Socket.IO + AWS), and "
+    "GlycanBench (glycoinformatics + MPNN). M.Tech thesis achieved "
     "98.47% accuracy in EGFR inhibitor classification for ovarian cancer "
     "using Gradient Boosting and SHAP."
 )
