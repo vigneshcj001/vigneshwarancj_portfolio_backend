@@ -106,7 +106,8 @@
         "Bioinformatics",
         "RDKit"
       ],
-      "link": "https://glycanbench.sastra.edu/"
+      "link": "https://glycanbench.sastra.edu/",
+      "github": "https://github.com/APalaniaLab/GlycanBench"
     },
     {
       "id": "egfr",
@@ -320,6 +321,7 @@
       "citation": "Vigneshwaran CJ & Ashok Palaniappan. GlycanBench: a unified resource for working with glycans, 2026 [submitted]",
       "role": "Full-stack development, ML model integration, glycoinformatics pipeline, Python package",
       "live_link": "https://glycanbench.sastra.edu/",
+      "github": "https://github.com/APalaniaLab/GlycanBench",
       "features": [
         "Create: Glycan Molecule builder (SNFG 2D + 3D conformer), Biosynthetic Networks (Cytoscape.js), Format Converter (IUPAC/WURCS/GlycoCT/SMILES)",
         "Visualize: 2D SNFG draw with motif highlight, 3D viewer (3Dmol.js, 4 styles), KEGG pathway maps with search",
@@ -331,7 +333,7 @@
         "Chat: GlycomicsChat — Groq gpt-oss-120b, LLM tool router over PubMed, ArXiv, GlyTouCan",
         "Python package: glycanbench SDK, CLI and server modes (MIT)"
       ],
-      "note": "Source is in the lab organisation (APalaniaLab) and private until publication."
+      "note": "Public source repository maintained in the APalaniaLab GitHub organisation."
     },
     "Explainable Machine Learning-Based Approach to Developing Potent EGFR Inhibitors for Ovarian Cancer": {
       "type": "Research / Explainable ML",
