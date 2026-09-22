@@ -456,38 +456,29 @@
     },
     "PocketPet": {
       "type": "Desktop / Agentic AI",
-      "subtitle": "Desktop Companion + AI Browser Agent",
-      "description": "Tauri 2/Rust desktop companion with JavaScript/SVG pets, games, customisation, and break reminders. A streamed task agent searches, reads pages, and controls a dedicated Chromium profile via CDP. Supports Anthropic and OpenAI-compatible providers including Ollama, with approval gates, secret-field refusal, spend limits, scheduling, and cancellation. Win32/UI Automation window tricks are Windows-only; macOS and Linux provide reduced features. GitHub Actions packages platform installers.",
+      "subtitle": "Desktop Companion, AI Browser Agent + Download Website",
+      "description": "One cross-platform product comprising a Tauri 2/Rust desktop companion and its React 19/TypeScript download website. The desktop app provides JavaScript/SVG pets, games, customisation, break reminders, and a streamed task agent that searches, reads pages, and controls a dedicated Chromium profile via CDP. It supports Anthropic and OpenAI-compatible providers including Ollama, with approval gates, secret-field refusal, spend limits, scheduling, and cancellation. The website reuses the app's sprites as an interactive demo, explains platform support, reads GitHub Releases, and directs visitors to the correct Windows, macOS, or Linux download. Win32/UI Automation window tricks are Windows-only; macOS and Linux provide reduced features.",
       "tech_stack": [
         "Rust",
         "Tauri",
         "JavaScript",
-        "Tokio",
-        "Win32",
-        "Chrome DevTools Protocol",
-        "Agentic AI",
-        "GitHub Actions"
-      ],
-      "live_link": "https://pocketpet-web.vercel.app/",
-      "github": "https://github.com/vigneshcj001/Pocketpet",
-      "limitations": "macOS overlay covers one display; Linux click-through requires X11/XWayland. Approval detection is heuristic, not a guarantee against every sensitive action. OS keychain storage has a restricted-permission file fallback on Linux when no keyring is available."
-    },
-    "PocketPet Website": {
-      "type": "Frontend / Product Website",
-      "subtitle": "Interactive Product Demo + Release Downloads",
-      "description": "Static React 19/TypeScript product site built with Vite and Tailwind CSS 4 on Vercel. Reuses desktop SVG sprites for an interactive pet demo and scrolling companion; React context shares appearance and requestAnimationFrame drives motion. GitHub APIs supply stats, release notes, and OS-specific downloads with release-page fallbacks. Includes keyboard controls, reduced-motion handling, and persistent themes. No application backend; the agent sequence is illustrative.",
-      "tech_stack": [
         "React.js",
         "TypeScript",
         "Vite",
         "Tailwind CSS",
-        "SVG Animation",
+        "Tokio",
+        "Win32",
+        "Chrome DevTools Protocol",
+        "Agentic AI",
         "GitHub API",
+        "GitHub Actions",
         "Vercel"
       ],
       "live_link": "https://pocketpet-web.vercel.app/",
-      "github": "https://github.com/vigneshcj001/Pocketpet-web",
-      "limitations": "GitHub API availability and release assets determine direct download availability. Browser demo does not run the desktop task agent."
+      "github": "https://github.com/vigneshcj001/Pocketpet",
+      "github_website": "https://github.com/vigneshcj001/Pocketpet-web",
+      "website_role": "Official product website and application download surface; it is part of PocketPet, not a separate project.",
+      "limitations": "macOS overlay covers one display; Linux click-through requires X11/XWayland. Approval detection is heuristic, not a guarantee against every sensitive action. OS keychain storage has a restricted-permission file fallback on Linux when no keyring is available. Website downloads fall back to GitHub Releases when direct asset discovery is unavailable."
     }
   },
   "employer": {
@@ -775,7 +766,7 @@
     }
   ],
   "stats": {
-    "total_projects": 11,
+    "total_projects": 10,
     "total_skills": 68,
     "experience_note": "Fresher — joined industry Dec 2025 as Junior Software Developer at Ceiyone Tech Works",
     "research_areas": 2

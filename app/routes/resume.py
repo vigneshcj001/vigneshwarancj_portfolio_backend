@@ -237,6 +237,8 @@ def _projects_section(pdf: ResumePDF, projects: dict) -> None:
             links.append(f"Live: {proj['live_link']}")
         if proj.get("github"):
             links.append(f"GitHub: {proj['github']}")
+        if proj.get("github_website"):
+            links.append(f"Website source: {proj['github_website']}")
         if proj.get("github_frontend"):
             links.append(f"GitHub (Frontend): {proj['github_frontend']}")
         if proj.get("github_backend"):
