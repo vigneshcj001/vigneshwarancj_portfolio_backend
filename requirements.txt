@@ -7,3 +7,5 @@ langchain-core>=0.3.0
 pydantic>=2.9.0
 slowapi>=0.1.9
 fpdf2>=2.7.9
+asyncpg>=0.30.0
+email-validator>=2.2.0

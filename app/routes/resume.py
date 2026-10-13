@@ -33,19 +33,13 @@ _FEATURED_PROJECTS = [
 ]
 
 _SUMMARY = (
-    "AI/ML Engineer and Full-Stack Developer specialising in agentic AI "
-    "systems, WhatsApp automation, and explainable machine learning. M.Tech "
-    "in Big Data Biology from SASTRA Deemed University (2025, 79.67%). "
-    "Currently a Junior Software Developer at Ceiyone Tech Works (Zoho "
-    "Partner), building AIORA - a multi-tenant WhatsApp business platform "
-    "spanning a WhatsApp gateway (Oblion), booking and commerce backends, "
-    "n8n-orchestrated AI conversation agents, and operator/customer "
-    "dashboards - and mentoring 2 engineering interns on it. Also built "
-    "production-grade products independently: PocketPet (Tauri/Rust desktop "
-    "companion and browser agent), Syncly (MERN + Socket.IO + AWS), and "
-    "GlycanBench (glycoinformatics + MPNN). M.Tech thesis achieved "
-    "98.47% accuracy in EGFR inhibitor classification for ovarian cancer "
-    "using Gradient Boosting and SHAP."
+    "AI Engineer and full-stack developer experienced in production-oriented "
+    "AI applications, conversational commerce platforms, automation workflows, "
+    "and cloud-deployed web solutions. Hands-on across Python, Node.js, "
+    "TypeScript, React, FastAPI, PostgreSQL, Redis, Docker, Kubernetes, and "
+    "REST APIs. Experienced in LLM integration, multi-agent workflows, OCR, "
+    "secure payment and logistics integrations, SaaS architecture, usage "
+    "tracking, and computational biology applications."
 )
 
 
@@ -150,8 +144,10 @@ def _header_section(pdf: ResumePDF, personal: dict) -> None:
 
     parts = [
         personal.get("email", ""),
+        personal.get("phone", ""),
         personal.get("linkedin", "").replace("https://", ""),
         personal.get("github", "").replace("https://", ""),
+        personal.get("leetcode", "").replace("https://", ""),
         personal.get("portfolio", "").replace("https://", ""),
     ]
     contact = " | ".join(x for x in parts if x)
@@ -237,6 +233,10 @@ def _projects_section(pdf: ResumePDF, projects: dict) -> None:
             links.append(f"Live: {proj['live_link']}")
         if proj.get("github"):
             links.append(f"GitHub: {proj['github']}")
+        if proj.get("pypi"):
+            links.append(f"PyPI: {proj['pypi']}")
+        if proj.get("doi"):
+            links.append(f"DOI: {proj['doi']}")
         if proj.get("github_website"):
             links.append(f"Website source: {proj['github_website']}")
         if proj.get("github_frontend"):

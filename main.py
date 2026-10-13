@@ -8,6 +8,7 @@ from app.limiter import limiter
 from app.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 from app.routes.assistant import router
 from app.routes.resume import router as resume_router
+from app.routes.platform import router as platform_router, init_platform_storage, close_platform_storage
 
 app = FastAPI(
     title="Vigneshwaran Portfolio Assistant API",
@@ -25,8 +26,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type"],
+    allow_methods=["GET", "POST", "PUT"],
+    allow_headers=["Content-Type", "X-Admin-Key"],
 )
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestSizeLimitMiddleware)
@@ -34,3 +35,14 @@ app.add_middleware(RequestSizeLimitMiddleware)
 # Routes
 app.include_router(router)
 app.include_router(resume_router)
+app.include_router(platform_router)
+
+
+@app.on_event("startup")
+async def startup_platform_storage():
+    await init_platform_storage()
+
+
+@app.on_event("shutdown")
+async def shutdown_platform_storage():
+    await close_platform_storage()
