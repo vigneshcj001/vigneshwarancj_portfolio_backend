@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from app.ai.okf import load_bundle
 from app.config import ALLOWED_ORIGINS
 from app.limiter import limiter
 from app.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
@@ -40,6 +41,7 @@ app.include_router(platform_router)
 
 @app.on_event("startup")
 async def startup_platform_storage():
+    load_bundle()  # Fail fast when committed OKF index or documents are invalid.
     await init_platform_storage()
 
 

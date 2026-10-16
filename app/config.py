@@ -4,6 +4,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+LAYA_API_KEY: str = os.getenv("LAYA_API_KEY", "")
+LAYA_BASE_URL: str = os.getenv(
+    "LAYA_BASE_URL", "https://laya-production-b57e.up.railway.app"
+).rstrip("/")
+LAYA_TIMEOUT_SECONDS: float = float(os.getenv("LAYA_TIMEOUT_SECONDS", "8"))
 LANGCHAIN_API_KEY: str = os.getenv("LANGCHAIN_API_KEY", "")
 LANGCHAIN_PROJECT: str = os.getenv("LANGCHAIN_PROJECT", "portfolio-assistant")
 

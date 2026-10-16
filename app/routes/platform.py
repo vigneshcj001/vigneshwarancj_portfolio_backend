@@ -12,7 +12,7 @@ from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from app.config import ADMIN_API_KEY, DATABASE_URL, METADATA_CACHE_SECONDS
+from app.config import ADMIN_API_KEY, DATABASE_URL, LAYA_API_KEY, METADATA_CACHE_SECONDS
 from app.limiter import limiter
 
 try:
@@ -132,7 +132,16 @@ async def _proof() -> dict[str, Any]:
 
 @router.get("/api/health")
 async def detailed_health():
-    return {"status": "ok", "database": "connected" if _pool else "not_configured", "time": datetime.now(timezone.utc).isoformat()}
+    return {
+        "status": "ok",
+        "database": "connected" if _pool else "not_configured",
+        "assistant": {
+            "knowledge": "okf",
+            "router": "laya" if LAYA_API_KEY else "local_fallback",
+            "generator": "groq",
+        },
+        "time": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @router.get("/api/proof")

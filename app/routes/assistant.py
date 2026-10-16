@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from app.ai.chain import assistant_chain, build_history
+from app.ai.orchestrator import prepare_turn
 from app.ai.sanitizer import clean_output
 from app.limiter import limiter
 from app.models import AssistantRequest, AssistantResponse
@@ -35,12 +36,16 @@ def health_check():
 @limiter.limit("10/minute")
 async def assistant_endpoint(request: Request, payload: AssistantRequest):
     try:
+        prepared = await prepare_turn(payload.message, payload.history)
+        if prepared.direct_reply:
+            return AssistantResponse(reply=prepared.direct_reply)
         chat_history = build_history(payload.history)
         raw_reply = await asyncio.wait_for(
             assistant_chain.ainvoke(
                 {
                     "user_message": payload.message,
                     "chat_history": chat_history,
+                    "knowledge_context": prepared.knowledge_context,
                 }
             ),
             timeout=LLM_TIMEOUT_SECONDS,
@@ -64,16 +69,21 @@ async def assistant_endpoint(request: Request, payload: AssistantRequest):
 @limiter.limit("10/minute")
 async def assistant_stream(request: Request, payload: AssistantRequest):
     """SSE streaming endpoint — emits text chunks as they arrive from the LLM."""
-    chat_history = build_history(payload.history)
 
     async def generate():
         accumulated = ""
         try:
+            prepared = await prepare_turn(payload.message, payload.history)
+            if prepared.direct_reply:
+                yield f"data: {json.dumps({'done': True, 'full': prepared.direct_reply})}\n\n"
+                return
+            chat_history = build_history(payload.history)
             async with asyncio.timeout(LLM_TIMEOUT_SECONDS):
                 async for chunk in assistant_chain.astream(
                     {
                         "user_message": payload.message,
                         "chat_history": chat_history,
+                        "knowledge_context": prepared.knowledge_context,
                     }
                 ):
                     if chunk:
