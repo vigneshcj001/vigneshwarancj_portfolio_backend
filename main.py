@@ -10,6 +10,7 @@ from app.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 from app.routes.assistant import router
 from app.routes.resume import router as resume_router
 from app.routes.platform import router as platform_router
+from app.routes.translation import router as translation_router
 from app.services.storage import close_storage, init_storage
 
 app = FastAPI(
@@ -38,6 +39,7 @@ app.add_middleware(RequestSizeLimitMiddleware)
 app.include_router(router)
 app.include_router(resume_router)
 app.include_router(platform_router)
+app.include_router(translation_router)
 
 
 @app.on_event("startup")

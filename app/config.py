@@ -27,7 +27,7 @@ ALLOWED_ORIGINS: list[str] = [
     "https://vigneshwarancj-portfolio-website.vercel.app",
 ]
 
-MAX_BODY_BYTES: int = 4096
+MAX_BODY_BYTES: int = 65536
 MAX_MESSAGE_LENGTH: int = 500
 MAX_HISTORY_ITEMS: int = 8
 MAX_HISTORY_CHARS: int = 1200
