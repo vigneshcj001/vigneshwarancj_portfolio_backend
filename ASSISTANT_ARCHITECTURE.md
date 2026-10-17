@@ -2,7 +2,7 @@
 
 ## Request flow
 
-1. `knowledge/index.md` lists trusted Open Knowledge Format documents generated from `portfolio_data.json`.
+1. `knowledge/index.md` lists canonical Open Knowledge Format documents organised by content type.
 2. Local OKF retrieval selects relevant profile, project, experience, skill, education, or research documents.
 3. Laya `POST /v1/systemone` makes typed `scope` and `topic` decisions in one request.
 4. Off-topic and prompt-extraction requests receive fixed replies without an LLM call.
@@ -22,11 +22,11 @@ Laya and Groq use separate provider credentials. Keys stay in backend environmen
 
 ## Updating knowledge
 
-After editing `portfolio_data.json`, rebuild and validate committed OKF documents:
+Edit typed Markdown files under `knowledge/`, then validate them:
 
 ```powershell
-node scripts/build_okf.mjs
 node scripts/check_okf.mjs
+python -m unittest discover -s tests -v
 ```
 
-Deployment validates bundle at startup. Missing, empty, or unsafe indexed paths stop startup instead of silently running with ungrounded knowledge.
+Backend compiles these files into portfolio objects for résumé and API use. Frontend prebuild compiles same Markdown into `src/data/portfolio.generated.js`. Deployment validates bundle at startup. Missing, empty, duplicated, unsupported, or unsafe entries stop startup instead of silently running with ungrounded knowledge.

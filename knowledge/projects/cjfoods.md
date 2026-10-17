@@ -1,24 +1,20 @@
 ---
-type: "concept"
-title: "CJFoods"
-tags: ["project","React.js","Swiggy API","JavaScript"]
-source: "portfolio_data.json#projects/CJFoods"
+type: project
+title: CJFoods
+order: 6
+data:
+  type: Frontend
+  subtitle: React.js Food Delivery App
+  description: Frontend-only React.js SPA consuming the Swiggy API in real time. No backend, no database — displays live restaurant
+    listings, menus, and filters with a responsive, performance-optimised UI.
+  tech_stack:
+  - React.js
+  - Swiggy API
+  - JavaScript
+  live_link: https://cj-foods.vercel.app/
+  github: https://github.com/vigneshcj001/CJFoods
 ---
 
 # CJFoods
 
-- **Type:** Frontend
-
-- **Subtitle:** React.js Food Delivery App
-
-- **Description:** Frontend-only React.js SPA consuming the Swiggy API in real time. No backend, no database — displays live restaurant listings, menus, and filters with a responsive, performance-optimised UI.
-
-## Tech Stack
-
-- React.js
-- Swiggy API
-- JavaScript
-
-- **Live Link:** https://cj-foods.vercel.app/
-
-- **Github:** https://github.com/vigneshcj001/CJFoods
+Frontend-only React.js SPA consuming the Swiggy API in real time. No backend, no database — displays live restaurant listings, menus, and filters with a responsive, performance-optimised UI.

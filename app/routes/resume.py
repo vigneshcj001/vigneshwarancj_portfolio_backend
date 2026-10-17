@@ -1,17 +1,14 @@
 """
-Generates an ATS-friendly PDF resume on-the-fly from portfolio_data.json.
-Every request reads the JSON fresh — no caching.
+Generates an ATS-friendly PDF resume from canonical structured Markdown.
 """
-import json
-from pathlib import Path
 
 from fastapi import APIRouter
 from fastapi.responses import Response
 from fpdf import FPDF
 
-router = APIRouter()
+from app.content import load_portfolio
 
-_DATA_PATH = Path(__file__).parent.parent.parent / "portfolio_data.json"
+router = APIRouter()
 
 _BLUE = (37, 99, 235)
 _GRAY = (107, 114, 128)
@@ -44,8 +41,7 @@ _SUMMARY = (
 
 
 def _load() -> dict:
-    with open(_DATA_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return load_portfolio()
 
 
 def _safe(text) -> str:
@@ -299,7 +295,7 @@ def _build(data: dict) -> bytes:
 
 @router.get("/api/resume")
 async def generate_resume() -> Response:
-    """Reads portfolio_data.json fresh and returns an ATS-friendly PDF."""
+    """Build an ATS-friendly PDF from structured Markdown content."""
     data = _load()
     pdf_bytes = _build(data)
     return Response(

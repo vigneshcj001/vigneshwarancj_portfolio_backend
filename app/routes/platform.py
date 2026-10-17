@@ -5,7 +5,6 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request
@@ -13,6 +12,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.config import ADMIN_API_KEY, DATABASE_URL, LAYA_API_KEY, METADATA_CACHE_SECONDS
+from app.content import load_portfolio
 from app.limiter import limiter
 
 try:
@@ -21,7 +21,6 @@ except ImportError:  # Local static validation can run before dependencies insta
     asyncpg = None
 
 router = APIRouter()
-DATA_PATH = Path(__file__).parent.parent.parent / "portfolio_data.json"
 _pool = None
 _proof_cache: dict[str, Any] = {"expires": 0, "value": None}
 
@@ -199,7 +198,7 @@ async def read_content(x_admin_key: str | None = Header(default=None)):
         latest = await _pool.fetchval("SELECT content FROM portfolio_content_revisions ORDER BY id DESC LIMIT 1")
         if latest:
             return latest
-    return json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    return load_portfolio()
 
 
 @router.put("/api/admin/content")
@@ -241,7 +240,7 @@ def _check_link(url: str) -> dict[str, Any]:
 @router.post("/api/admin/check-links")
 async def check_links(x_admin_key: str | None = Header(default=None)):
     _admin(x_admin_key)
-    data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    data = load_portfolio()
     urls = sorted(set(_urls(data)))[:100]
     results = await asyncio.gather(*(asyncio.to_thread(_check_link, url) for url in urls))
     return {"checked": len(results), "failed": [item for item in results if not item["ok"]]}

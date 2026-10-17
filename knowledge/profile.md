@@ -1,54 +1,34 @@
 ---
-type: "concept"
-title: "Profile and contact"
-tags: ["profile","contact","availability","links"]
-source: "portfolio_data.json#personal"
+type: profile
+title: Profile
+order: 0
+data:
+  personal:
+    name: Vigneshwaran C. J.
+    nickname: CJ
+    email: vigneshwarancj@gmail.com
+    linkedin: https://www.linkedin.com/in/vigneshwarancj1/
+    github: https://github.com/vigneshcj001
+    instagram: https://www.instagram.com/vigneshwarancj1/
+    twitter_x: https://x.com/vigneshwarancj
+    youtube: https://www.youtube.com/@vigneshwarancj
+    portfolio: https://vigneshwarancj-portfolio-website.vercel.app
+    buy_me_a_coffee: https://buymeacoffee.com/vigneshwarancj
+    open_to_opportunities: true
+    phone: +91 93615 69230
+    leetcode: https://leetcode.com/vigneshcj001/
+  employer:
+    name: Ceiyone Tech Works Private Limited
+    short: Ceiyone Tech Works Pvt. Ltd.
+    type: Zoho Partner in India
+    address: 25/2, Masakalipalayam, Ram Lakshman Nagar, Peelamedu, Coimbatore, Tamil Nadu 641028
+  stats:
+    total_projects: 10
+    total_skills: 80
+    experience_note: Fresher — joined industry Dec 2025 as Junior Software Developer at Ceiyone Tech Works
+    research_areas: 2
 ---
 
-# Profile and contact
+# Profile
 
-- **Name:** Vigneshwaran C. J.
-
-- **Nickname:** CJ
-
-- **Email:** vigneshwarancj@gmail.com
-
-- **Linkedin:** https://www.linkedin.com/in/vigneshwarancj1/
-
-- **Github:** https://github.com/vigneshcj001
-
-- **Instagram:** https://www.instagram.com/vigneshwarancj1/
-
-- **Twitter X:** https://x.com/vigneshwarancj
-
-- **Youtube:** https://www.youtube.com/@vigneshwarancj
-
-- **Portfolio:** https://vigneshwarancj-portfolio-website.vercel.app
-
-- **Buy Me A Coffee:** https://buymeacoffee.com/vigneshwarancj
-
-- **Open To Opportunities:** true
-
-- **Phone:** +91 93615 69230
-
-- **Leetcode:** https://leetcode.com/vigneshcj001/
-
-## Employer
-
-- **Name:** Ceiyone Tech Works Private Limited
-
-- **Short:** Ceiyone Tech Works Pvt. Ltd.
-
-- **Type:** Zoho Partner in India
-
-- **Address:** 25/2, Masakalipalayam, Ram Lakshman Nagar, Peelamedu, Coimbatore, Tamil Nadu 641028
-
-## Stats
-
-- **Total Projects:** 10
-
-- **Total Skills:** 80
-
-- **Experience Note:** Fresher — joined industry Dec 2025 as Junior Software Developer at Ceiyone Tech Works
-
-- **Research Areas:** 2
+Identity, public links, availability, current employer, and portfolio totals.
