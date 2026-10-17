@@ -9,7 +9,8 @@ from app.limiter import limiter
 from app.middleware import RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 from app.routes.assistant import router
 from app.routes.resume import router as resume_router
-from app.routes.platform import router as platform_router, init_platform_storage, close_platform_storage
+from app.routes.platform import router as platform_router
+from app.services.storage import close_storage, init_storage
 
 app = FastAPI(
     title="Vigneshwaran Portfolio Assistant API",
@@ -42,9 +43,9 @@ app.include_router(platform_router)
 @app.on_event("startup")
 async def startup_platform_storage():
     load_bundle()  # Fail fast when committed OKF index or documents are invalid.
-    await init_platform_storage()
+    await init_storage()
 
 
 @app.on_event("shutdown")
 async def shutdown_platform_storage():
-    await close_platform_storage()
+    await close_storage()
