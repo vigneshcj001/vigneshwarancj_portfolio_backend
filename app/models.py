@@ -13,6 +13,7 @@ class HistoryItem(BaseModel):
 class AssistantRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=MAX_MESSAGE_LENGTH)
     history: list[HistoryItem] = Field(default_factory=list)
+    language: Literal["en", "ta", "fr", "zh-CN", "hi", "es", "ar"] = "en"
 
     @field_validator("message")
     @classmethod
@@ -41,3 +42,6 @@ class AssistantRequest(BaseModel):
 
 class AssistantResponse(BaseModel):
     reply: str
+    sources: list[dict[str, str]] = Field(default_factory=list)
+    followups: list[str] = Field(default_factory=list)
+    project: str | None = None

@@ -21,6 +21,12 @@ class KnowledgeEntry:
     body: str
 
 
+@dataclass(frozen=True)
+class KnowledgeResult:
+    context: str
+    sources: tuple[dict[str, str], ...]
+
+
 @lru_cache(maxsize=1)
 def load_bundle() -> tuple[KnowledgeEntry, ...]:
     return tuple(
@@ -42,7 +48,7 @@ def _tokens(value: str) -> set[str]:
     }
 
 
-def retrieve(query: str, topic: str = "general", limit: int = 4, max_chars: int = 12000) -> str:
+def retrieve_with_sources(query: str, topic: str = "general", limit: int = 4, max_chars: int = 12000) -> KnowledgeResult:
     topic_terms = {
         "profile": "profile contact availability biography",
         "projects": "project architecture result technology",
@@ -76,4 +82,38 @@ def retrieve(query: str, topic: str = "general", limit: int = 4, max_chars: int 
             used += len(chunk)
         if used >= max_chars:
             break
-    return "\n\n---\n\n".join(chunks)
+    sources = tuple(
+        {
+            "title": entry.title,
+            "kind": entry.kind.replace("_", " ").title(),
+            "path": entry.path,
+            "url": source_url(entry),
+        }
+        for entry in selected[:len(chunks)]
+    )
+    return KnowledgeResult("\n\n---\n\n".join(chunks), sources)
+
+
+def source_url(entry: KnowledgeEntry) -> str:
+    if entry.path.startswith("projects/"):
+        slug = entry.path.removeprefix("projects/").removesuffix(".md")
+        if slug.startswith("glycanbench-"):
+            return "/projects/glycanbench"
+        if slug in {"pocketpet", "syncly"}:
+            return f"/projects/{slug}"
+        return "/projects"
+    if "aiora" in f"{entry.title} {entry.body}".casefold():
+        return "/projects/aiora"
+    if entry.kind == "publication":
+        return "/publications"
+    if entry.kind == "experience":
+        return "/experience"
+    if entry.kind == "skills":
+        return "/skills"
+    if entry.kind in {"education", "certification", "profile"}:
+        return "/about"
+    return "/"
+
+
+def retrieve(query: str, topic: str = "general", limit: int = 4, max_chars: int = 12000) -> str:
+    return retrieve_with_sources(query, topic, limit, max_chars).context
