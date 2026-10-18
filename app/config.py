@@ -1,7 +1,9 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+WORKSPACE_ENV = Path(__file__).resolve().parents[2] / ".env"
+load_dotenv(WORKSPACE_ENV)
 
 GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 LAYA_API_KEY: str = os.getenv("LAYA_API_KEY", "")
@@ -18,14 +20,16 @@ if not GROQ_API_KEY:
 # Only enable LangSmith tracing when an API key is explicitly provided.
 # Leaving tracing on without a key adds latency and logs user conversations
 # to LangChain servers unintentionally.
-if LANGCHAIN_API_KEY:
+if LANGCHAIN_API_KEY and os.getenv("LANGCHAIN_TRACING_V2", "true").casefold() != "false":
     os.environ["LANGCHAIN_API_KEY"] = LANGCHAIN_API_KEY
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGCHAIN_PROJECT"] = LANGCHAIN_PROJECT
 
-ALLOWED_ORIGINS: list[str] = [
+FRONTEND_ORIGIN: str = os.getenv("FRONTEND_ORIGIN", "").rstrip("/")
+ALLOWED_ORIGINS: list[str] = list(dict.fromkeys(filter(None, [
     "https://vigneshwarancj-portfolio-website.vercel.app",
-]
+    FRONTEND_ORIGIN,
+])))
 
 MAX_BODY_BYTES: int = 65536
 MAX_MESSAGE_LENGTH: int = 500

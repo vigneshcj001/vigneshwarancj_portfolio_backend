@@ -1,4 +1,7 @@
+import os
 import unittest
+
+os.environ.setdefault("GROQ_API_KEY", "test-key")
 
 from pydantic import ValidationError
 

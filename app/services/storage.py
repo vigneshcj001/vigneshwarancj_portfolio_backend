@@ -37,6 +37,10 @@ async def init_storage() -> None:
             CREATE TABLE IF NOT EXISTS portfolio_subscribers (
               email TEXT PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             );
+            CREATE TABLE IF NOT EXISTS portfolio_agent_sessions (
+              session_id TEXT PRIMARY KEY, messages JSONB NOT NULL DEFAULT '[]'::jsonb,
+              updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
         """)
 
 
@@ -100,3 +104,28 @@ async def analytics_summary() -> list[dict[str, Any]]:
         "FROM portfolio_events GROUP BY name ORDER BY count DESC"
     )
     return [dict(row) for row in rows]
+
+
+async def load_agent_session(session_id: str) -> list[dict[str, str]] | None:
+    if not _pool:
+        return None
+    value = await _pool.fetchval(
+        "SELECT messages FROM portfolio_agent_sessions WHERE session_id=$1",
+        session_id,
+    )
+    return list(value) if isinstance(value, list) else None
+
+
+async def save_agent_session(session_id: str, messages: list[dict[str, str]]) -> bool:
+    if not _pool:
+        return False
+    await _pool.execute(
+        """
+        INSERT INTO portfolio_agent_sessions(session_id,messages,updated_at)
+        VALUES($1,$2::jsonb,NOW())
+        ON CONFLICT(session_id) DO UPDATE SET messages=EXCLUDED.messages, updated_at=NOW()
+        """,
+        session_id,
+        json.dumps(messages),
+    )
+    return True

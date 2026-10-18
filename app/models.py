@@ -14,6 +14,7 @@ class AssistantRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=MAX_MESSAGE_LENGTH)
     history: list[HistoryItem] = Field(default_factory=list)
     language: Literal["en", "ta", "fr", "zh-CN", "hi", "es", "ar"] = "en"
+    session_id: str | None = Field(default=None, min_length=8, max_length=128, pattern=r"^[A-Za-z0-9_.-]+$")
 
     @field_validator("message")
     @classmethod
@@ -45,3 +46,6 @@ class AssistantResponse(BaseModel):
     sources: list[dict[str, str]] = Field(default_factory=list)
     followups: list[str] = Field(default_factory=list)
     project: str | None = None
+    actions: list[dict] = Field(default_factory=list)
+    tools: list[dict] = Field(default_factory=list)
+    session_id: str | None = None
