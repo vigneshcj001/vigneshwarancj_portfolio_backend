@@ -27,7 +27,16 @@ class RouteDecision:
 def _local_route(message: str) -> RouteDecision:
     if _INJECTION_RE.search(message):
         return RouteDecision("prompt_attack", "general", "local")
-    return RouteDecision("portfolio", "general", "local")
+    topics = (
+        ("contact", r"\b(contact|hire|email|available|availability)\b"),
+        ("education", r"\b(education|degree|university|certification)\b"),
+        ("experience", r"\b(experience|career|internship|current role|ceiyone)\b"),
+        ("research", r"\b(research|publication|thesis|egfr)\b"),
+        ("skills", r"\b(skills|competencies|proficient)\b"),
+        ("projects", r"\b(project|pocketpet|pocket pet|aiora|syncly|glycanbench|glycan bench)\b"),
+    )
+    topic = next((topic for topic, pattern in topics if re.search(pattern, message, re.I)), "general")
+    return RouteDecision("portfolio", topic, "local")
 
 
 def _choice(payload: dict, key: str, default: str) -> tuple[str, float | None]:

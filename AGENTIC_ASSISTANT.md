@@ -15,6 +15,10 @@
 
 ## Request flow
 
+Progress describes the requested project and the records actually being read, rather than exposing tool identifiers. LangGraph streams each operation's status and outcome before generation starts. Browser actions remain prepared until the frontend finds the destination and reports a result; contact handoffs prepare drafts only. Restoring a saved conversation does not replay navigation.
+
+Project follow-ups carry the named project into retrieval and navigation. Suggested questions name the project, cover a different aspect from the current request, and omit questions already asked in the session. Answer instructions lead with the requested fact and supporting implementation details, and never claim a browser action has already happened.
+
 1. Frontend sends message, selected language, recent transcript, and browser session ID.
 2. API restores isolated server memory when available.
 3. LangGraph asks Laya for scope and topic, builds an approved tool plan, then executes at most four tools.

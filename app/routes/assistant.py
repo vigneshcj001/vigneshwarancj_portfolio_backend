@@ -6,9 +6,9 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from app.ai.chain import assistant_chain, build_history
-from app.agent.graph import AgentTurn, run_agent_turn
+from app.agent.graph import AgentTurn, run_agent_turn, stream_agent_turn
 from app.agent.memory import load_memory, save_memory
-from app.ai.presentation import LANGUAGE_NAMES
+from app.ai.presentation import LANGUAGE_NAMES, answer_status
 from app.ai.sanitizer import clean_output
 from app.limiter import limiter
 from app.models import AssistantRequest, AssistantResponse, HistoryItem
@@ -139,12 +139,18 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
                 )}
                 yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': cached['reply'], **metadata})}\n\n"
                 return
-            yield f"data: {json.dumps({'type': 'status', 'phase': 'planning', 'message': 'Choosing verified portfolio tools'})}\n\n"
             history_items, raw_history = await _history(payload)
-            turn = await run_agent_turn(payload.message, raw_history, payload.language, payload.session_id)
+            turn = None
+            async for event in stream_agent_turn(payload.message, raw_history, payload.language, payload.session_id):
+                if await request.is_disconnected():
+                    return
+                if isinstance(event, AgentTurn):
+                    turn = event
+                else:
+                    yield f"data: {json.dumps(event)}\n\n"
+            if turn is None:
+                raise RuntimeError("Portfolio turn did not complete")
             metadata = _metadata(turn, payload.session_id)
-            for trace in turn.tool_trace:
-                yield f"data: {json.dumps({'type': 'tool', **trace.model_dump()})}\n\n"
             for action in turn.actions:
                 yield f"data: {json.dumps({'type': 'ui_action', 'action': action.model_dump()})}\n\n"
             if turn.direct_reply:
@@ -154,7 +160,7 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
                 yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': turn.direct_reply, **metadata})}\n\n"
                 return
             chat_history = build_history(history_items)
-            yield f"data: {json.dumps({'type': 'status', 'phase': 'answering', 'message': 'Writing grounded answer'})}\n\n"
+            yield f"data: {json.dumps({'type': 'status', 'phase': 'answering', 'message': answer_status(payload.message, turn.project)})}\n\n"
             async with asyncio.timeout(LLM_TIMEOUT_SECONDS):
                 async for chunk in assistant_chain.astream(
                     {
