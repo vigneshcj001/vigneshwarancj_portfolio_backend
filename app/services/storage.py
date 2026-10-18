@@ -86,9 +86,10 @@ async def save_subscriber(email: str) -> None:
 async def latest_content():
     if not _pool:
         return None
-    return await _pool.fetchval(
+    value = await _pool.fetchval(
         "SELECT content FROM portfolio_content_revisions ORDER BY id DESC LIMIT 1"
     )
+    return json.loads(value) if isinstance(value, str) else value
 
 
 async def save_content_revision(content: dict[str, Any], note: str) -> int:
@@ -113,6 +114,8 @@ async def load_agent_session(session_id: str) -> list[dict[str, str]] | None:
         "SELECT messages FROM portfolio_agent_sessions WHERE session_id=$1",
         session_id,
     )
+    if isinstance(value, str):
+        value = json.loads(value)
     return list(value) if isinstance(value, list) else None
 
 

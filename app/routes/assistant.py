@@ -45,8 +45,9 @@ def _is_capacity_error(exc: Exception) -> bool:
 async def _history(payload: AssistantRequest) -> tuple[list[HistoryItem], list[dict[str, str]]]:
     stored = await load_memory(payload.session_id)
     raw = stored or [{"role": item.role, "content": item.content} for item in payload.history]
-    items = [HistoryItem.model_validate(item) for item in raw]
-    return items, raw
+    # Apply the same history budget to restored sessions as client payloads.
+    items = AssistantRequest.cap_history([HistoryItem.model_validate(item) for item in raw])
+    return items, [{"role": item.role, "content": item.content} for item in items]
 
 
 def _metadata(turn: AgentTurn, session_id: str | None) -> dict:

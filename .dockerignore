@@ -6,6 +6,8 @@ __pycache__/
 .gitignore
 pyrightconfig.json
 *.md
+!knowledge/
+!knowledge/**/*.md
 .parcel-cache/
 venv/
 .venv/
