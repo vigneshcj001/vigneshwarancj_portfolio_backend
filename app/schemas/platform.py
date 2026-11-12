@@ -35,5 +35,18 @@ class ContentPayload(BaseModel):
     note: str = Field(default="Portfolio content update", max_length=200)
 
 
+class MatchPayload(BaseModel):
+    job_description: str = Field(min_length=80, max_length=8000)
+    use_ai: bool = True
+
+    @field_validator("job_description")
+    @classmethod
+    def strip_text(cls, value: str) -> str:
+        value = value.strip()
+        if len(value) < 80:
+            raise ValueError("paste the full job description (at least 80 characters)")
+        return value
+
+
 class DemoPayload(BaseModel):
     input: str = Field(min_length=1, max_length=160)

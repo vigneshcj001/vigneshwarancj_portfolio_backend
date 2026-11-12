@@ -43,6 +43,7 @@ ALLOWED_ORIGINS: list[str] = list(dict.fromkeys(filter(None, [
 # 0 = use the socket peer address (safe default when exposed directly).
 # Set to 1 on Render/Railway so each visitor gets their own rate-limit bucket.
 TRUSTED_PROXY_COUNT: int = max(0, int(os.getenv("TRUSTED_PROXY_COUNT", "0") or 0))
+ANSWER_CACHE_DAYS: int = max(1, int(os.getenv("ANSWER_CACHE_DAYS", "7") or 7))
 GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 APP_VERSION: str = os.getenv("APP_VERSION", os.getenv("RENDER_GIT_COMMIT", "dev"))[:12]
 

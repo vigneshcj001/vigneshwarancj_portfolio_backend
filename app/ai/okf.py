@@ -1,3 +1,4 @@
+import hashlib
 import re
 from dataclasses import dataclass
 from functools import lru_cache
@@ -39,6 +40,16 @@ def load_bundle() -> tuple[KnowledgeEntry, ...]:
         )
         for document in load_documents()
     )
+
+
+@lru_cache(maxsize=1)
+def knowledge_version() -> str:
+    """Short content hash of the knowledge bundle; changes whenever Markdown changes."""
+    digest = hashlib.sha256()
+    for entry in load_bundle():
+        digest.update(entry.path.encode())
+        digest.update(entry.body.encode())
+    return digest.hexdigest()[:12]
 
 
 def _tokens(value: str) -> set[str]:

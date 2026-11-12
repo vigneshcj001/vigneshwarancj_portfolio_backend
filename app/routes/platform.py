@@ -3,18 +3,20 @@ import secrets
 import time
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Header, HTTPException, Query, Request
 from fastapi.responses import Response
 
 from app.config import ADMIN_API_KEY, APP_VERSION, LAYA_API_KEY
 from app.content import load_portfolio
 from app.limiter import limiter
-from app.schemas.platform import ContentPayload, ContactPayload, DemoPayload, EventPayload, NewsletterPayload
+from app.schemas.platform import ContentPayload, ContactPayload, DemoPayload, EventPayload, MatchPayload, NewsletterPayload
 from app.services.demos import simulate_project
+from app.services.match import analyze_job
 from app.services.proof import MetadataUnavailable, check_links as check_content_links, public_metadata
 from app.services.storage import (
     StorageUnavailable,
     analytics_summary,
+    funnel_summary,
     latest_content,
     ping,
     record_event as store_event,
@@ -75,6 +77,14 @@ async def project_demo(request: Request, slug: str, payload: DemoPayload):
         raise HTTPException(status_code=404, detail="Demo not available") from error
 
 
+@router.post("/api/match")
+@limiter.limit("40/day")
+@limiter.limit("6/minute")
+async def job_match(request: Request, payload: MatchPayload):
+    """Map a job description's requirements to documented portfolio evidence."""
+    return await analyze_job(payload.job_description, payload.use_ai)
+
+
 @router.post("/api/events", status_code=202)
 @limiter.limit("60/minute")
 async def record_event(request: Request, payload: EventPayload):
@@ -128,6 +138,18 @@ async def analytics(x_admin_key: str | None = Header(default=None)):
     except StorageUnavailable as error:
         _storage_error(error)
     return {"events": events}
+
+
+@router.get("/api/admin/funnel")
+async def funnel(
+    days: int = Query(default=30, ge=1, le=365),
+    x_admin_key: str | None = Header(default=None),
+):
+    _admin(x_admin_key)
+    try:
+        return await funnel_summary(days)
+    except StorageUnavailable as error:
+        _storage_error(error)
 
 
 @router.post("/api/admin/check-links")
