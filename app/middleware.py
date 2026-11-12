@@ -1,8 +1,40 @@
+import logging
+import re
+import time
+import uuid
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import MAX_BODY_BYTES
+
+access_logger = logging.getLogger("portfolio.access")
+_REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
+
+
+class RequestContextMiddleware(BaseHTTPMiddleware):
+    """Tag each request with an ID and log method, path, status, and latency.
+
+    An incoming X-Request-ID (e.g. from Render's edge) is reused when it is
+    well-formed so logs can be correlated across the proxy and the app.
+    Request bodies, query strings, and IPs are deliberately not logged.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        incoming = request.headers.get("x-request-id", "")
+        request_id = incoming if _REQUEST_ID.match(incoming) else uuid.uuid4().hex[:16]
+        request.state.request_id = request_id
+        started = time.perf_counter()
+        response = await call_next(request)
+        elapsed_ms = (time.perf_counter() - started) * 1000
+        response.headers["X-Request-ID"] = request_id
+        if request.url.path not in ("/", "/api/health"):
+            access_logger.info(
+                "%s %s %s %.0fms id=%s",
+                request.method, request.url.path, response.status_code, elapsed_ms, request_id,
+            )
+        return response
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):

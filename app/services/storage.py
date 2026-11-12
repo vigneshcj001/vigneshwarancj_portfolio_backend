@@ -1,3 +1,4 @@
+import asyncio
 import json
 from typing import Any
 
@@ -53,6 +54,17 @@ async def close_storage() -> None:
 
 def connected() -> bool:
     return _pool is not None
+
+
+async def ping(timeout: float = 2.0) -> str:
+    """Return "connected", "not_configured", or "unreachable" for health checks."""
+    if _pool is None:
+        return "not_configured"
+    try:
+        await asyncio.wait_for(_pool.fetchval("SELECT 1"), timeout=timeout)
+        return "connected"
+    except Exception:
+        return "unreachable"
 
 
 def _require_pool():
