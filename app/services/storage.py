@@ -2,7 +2,7 @@ import asyncio
 import json
 from typing import Any
 
-from app.config import DATABASE_URL
+from app.config import ANSWER_CACHE_DAYS, DATABASE_URL, SESSION_RETENTION_DAYS
 
 try:
     import asyncpg
@@ -50,6 +50,27 @@ async def init_storage() -> None:
             CREATE INDEX IF NOT EXISTS portfolio_events_created_idx
               ON portfolio_events (created_at, name);
         """)
+    await purge_expired()
+
+
+async def purge_expired() -> dict[str, int]:
+    """Data retention: drop chat sessions and cached answers past their window.
+
+    Conversations are visitor content, so they are not kept indefinitely.
+    Runs at startup; long-lived deployments restart often enough on Render.
+    """
+    if _pool is None:
+        return {}
+    sessions = await _pool.execute(
+        "DELETE FROM portfolio_agent_sessions WHERE updated_at < NOW() - make_interval(days => $1)",
+        SESSION_RETENTION_DAYS,
+    )
+    answers = await _pool.execute(
+        "DELETE FROM portfolio_answer_cache WHERE created_at < NOW() - make_interval(days => $1)",
+        ANSWER_CACHE_DAYS,
+    )
+    # asyncpg returns command tags such as "DELETE 3".
+    return {"sessions": int(sessions.split()[-1]), "answers": int(answers.split()[-1])}
 
 
 async def close_storage() -> None:

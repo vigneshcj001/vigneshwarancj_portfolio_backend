@@ -1,6 +1,6 @@
 # Portfolio assistant architecture
 
-Implementation review: 19 October 2026. Public interactive explanation: frontend `/assistant-architecture`. Operational setup and checks: [AGENTIC_ASSISTANT.md](AGENTIC_ASSISTANT.md). Full frontend/backend module map: `CODEBASE.md` in the companion frontend repository.
+Implementation review: 12 November 2026. Public interactive explanation: frontend `/assistant-architecture`. Operational setup and checks: [AGENTIC_ASSISTANT.md](AGENTIC_ASSISTANT.md). Design assessment against an AI system design rubric: [AI_SYSTEM_DESIGN.md](AI_SYSTEM_DESIGN.md). Full frontend/backend module map: `CODEBASE.md` in the companion frontend repository.
 
 ## Actual execution order
 
@@ -35,9 +35,11 @@ Laya is called by `stream_agent_turn` before the graph starts. The graph's `rout
 
 `knowledge/index.md` lists 25 YAML-frontmatter Markdown documents: profile, education, certifications, skills, research interests/publications, ten independent projects, and four experience records. AIORA is described in the Ceiyone experience document. `app/content.py` validates paths and types, compiles canonical portfolio objects, and caches loaded documents.
 
-`app/ai/okf.py` ranks sources by token overlap, weighting title/path/type matches more heavily than body matches. It returns up to four sources by default with a 12,000-character context budget per retrieval. There are no embeddings, vector database, web search, or live project inspection in this assistant. Source links map to public portfolio pages.
+`app/ai/okf.py` ranks sources by token overlap, weighting title/path/type matches more heavily than body matches. A small query-expansion vocabulary maps everyday phrasing to résumé terms ("working now" → "present", "teaching" → "tutor"). It returns up to four sources by default with a 12,000-character context budget per retrieval. There are no embeddings, vector database, web search, or live project inspection in this assistant. Source links map to public portfolio pages.
 
-Tools can also read structured skills and résumé data directly. Groq receives the question, bounded history, selected language, and collected tool context. Its `openai/gpt-oss-120b` answer model is configured with temperature 0.65 and 400 maximum output tokens. Grounding is a prompt requirement, not a factual correctness guarantee.
+Retrieval quality is measured by `python -m evals.retrieval_eval` on 24 labelled questions: recall@4 0.958 (direct questions 1.0, paraphrases 0.857), MRR 0.833. `tests/test_retrieval_eval.py` fails if direct-question recall drops below 100% or overall recall below 0.9.
+
+Tools can also read structured skills and résumé data directly. Groq receives the question, bounded history, selected language, and collected tool context. The model is set by `GROQ_MODEL` (default `openai/gpt-oss-120b`); answers use `ANSWER_TEMPERATURE` (default 0.65) and 400 maximum output tokens. Grounding is a prompt requirement, not a factual correctness guarantee.
 
 ## Typed tool surface
 
@@ -90,15 +92,29 @@ Named project follow-ups can inherit a project from recent user messages. Sugges
 
 The browser stores up to 12 conversation transcripts in localStorage. The request supplies a session ID. Server history takes precedence when available and is capped to eight items within 1,200 characters before generation. The memory layer independently keeps at most 20 cleaned messages per session, with 2,000 characters per stored message.
 
-PostgreSQL stores sessions when configured. asyncpg JSONB values are decoded before use. Storage errors or unavailable storage use a bounded 256-session process cache. That cache is neither durable nor shared across workers. Session IDs partition data but are not account authentication.
+PostgreSQL stores sessions when configured. asyncpg JSONB values are decoded before use. Storage errors or unavailable storage use a bounded 256-session process cache. That cache is neither durable nor shared across workers. Session IDs partition data but are not account authentication; new IDs come from `crypto.randomUUID()`, so they cannot be guessed. Older timestamp-based IDs are re-keyed when the browser loads them, and their server copies are erased.
 
-The response cache holds up to 256 results and is used only for requests without history or a session ID. Browser Clear chat does not delete or rotate the server session; local transcript deletion is not server-side erasure.
+Opening questions (no prior history) are cached by language, normalized question text, and a hash of the knowledge base, so editing the Markdown invalidates them. The cache holds 256 entries in memory and, with PostgreSQL, persists in `portfolio_answer_cache` for `ANSWER_CACHE_DAYS` (default 7). Cached answers never carry another visitor's session ID, and a cache hit is still saved to the current session so follow-ups keep context.
 
-Other bounds: 500 characters per question, 64 KiB request body, four tools per graph turn, 10 assistant requests/minute and 100/day per IP. Laya's default timeout is 8 seconds; answer generation has a 30-second timeout. The client uses a 45-second request timeout and one automatic retry. Client usage display is separate from server rate limits.
+Erasure and retention: browser Clear chat and Delete conversation call `DELETE /api/assistant/session/{id}`. On startup, sessions idle longer than `SESSION_RETENTION_DAYS` (default 30) and expired cached answers are purged.
+
+Other bounds: 500 characters per question, 64 KiB request body, four tools per graph turn, 10 assistant requests/minute and 100/day per visitor IP (resolved behind proxies with `TRUSTED_PROXY_COUNT`). Laya's default timeout is 8 seconds; answer generation has a 30-second timeout. The client uses a 45-second request timeout and one automatic retry. Client usage display is separate from server rate limits.
+
+## Job match pipeline
+
+`POST /api/match` (`app/services/match.py`) is a second, non-conversational AI feature built on the same knowledge:
+
+1. **Keyword layer (deterministic, always runs).** Technologies named in the job description are matched against an index of portfolio skills, project and role tech, and role or project prose. Each match carries up to three evidence links. Common terms the portfolio never mentions are reported as gaps. Short, ambiguous terms (Go, R, REST, SQL) are matched case-sensitively, and "R&D" is not read as R.
+2. **Assessment layer (Groq, temperature 0.1).** Retrieval gathers up to six documents. The job description is wrapped in `<job>` tags and labelled as untrusted data. The model returns JSON with a summary and up to ten requirements rated strong, partial, or gap. Output is parsed against that schema; anything else is discarded.
+3. **Fallback.** If the model call fails or its output is invalid, the response contains the keyword layer only, with `generated_by: "keywords"`, and the page says so.
+
+Limits: 80–8,000 characters, 6 requests/minute and 40/day per visitor. The job description is not stored or logged, and analytics receive only a coverage bucket and the engine name.
 
 ## Configuration and deployment
 
-`app/config.py` loads the `.env` in the parent workspace. Inject secrets through the deployment environment in containers. `GROQ_API_KEY` is required; `LAYA_API_KEY`, `LAYA_BASE_URL`, `LAYA_TIMEOUT_SECONDS`, `DATABASE_URL`, `ADMIN_API_KEY`, `FRONTEND_ORIGIN`, `METADATA_CACHE_SECONDS`, and LangSmith variables configure optional services.
+`app/config.py` loads the `.env` in the parent workspace. Inject secrets through the deployment environment in containers. `GROQ_API_KEY` is required. Optional services and tuning: `LAYA_API_KEY`, `LAYA_BASE_URL`, `LAYA_TIMEOUT_SECONDS`, `DATABASE_URL`, `ADMIN_API_KEY`, `FRONTEND_ORIGIN`, `EXTRA_ALLOWED_ORIGINS`, `TRUSTED_PROXY_COUNT`, `GITHUB_TOKEN`, `METADATA_CACHE_SECONDS`, `GROQ_MODEL`, `ANSWER_TEMPERATURE`, `ANSWER_CACHE_DAYS`, `SESSION_RETENTION_DAYS`, and the LangSmith variables.
+
+Every response carries an `X-Request-ID` that also appears in the access log (method, path, status, latency; no bodies, query strings, or IPs). Errors, including rate limits (`429` with `Retry-After`), use the `{"detail": "..."}` shape.
 
 LangSmith tracing is enabled when its API key is supplied unless `LANGCHAIN_TRACING_V2=false`; trace data can include user content and session metadata. Keys are not included in frontend code or knowledge. Logging and provider policies should be reviewed separately rather than assuming all requests remain local.
 
@@ -106,4 +122,4 @@ The Dockerfile uses Python 3.11 and runs Uvicorn on port 8000 as a non-root user
 
 ## Keep documentation and UI synchronized
 
-When changing the graph, tool registry, model, limits, or memory behavior, update this document and the frontend `src/data/assistantArchitecture.js`. The UI is an explanatory model, not live service telemetry. Validate content with `node scripts/check_okf.mjs`, run backend tests, then build the frontend and run its architecture browser suite. Provider availability, production delivery, and live model quality require separate checks.
+When changing the graph, tool registry, model, limits, retrieval, or memory behavior, update this document, [AI_SYSTEM_DESIGN.md](AI_SYSTEM_DESIGN.md), and the frontend `src/data/assistantArchitecture.js`. The UI is an explanatory model, not live service telemetry. Validate content with `node scripts/check_okf.mjs`, run backend tests (which include the retrieval eval gate), then build the frontend and run its architecture browser suite. When adding knowledge, add a labelled case to `evals/retrieval_cases.json`. Provider availability, production delivery, and live answer quality require separate checks.

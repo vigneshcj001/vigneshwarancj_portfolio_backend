@@ -3,7 +3,7 @@ import json
 
 from langchain_groq import ChatGroq
 
-from app.config import GROQ_API_KEY
+from app.config import GROQ_API_KEY, GROQ_MODEL
 
 LANGUAGE_NAMES = {
     "ta": "Tamil",
@@ -17,7 +17,7 @@ LANGUAGE_NAMES = {
 _cache: dict[tuple[str, str], str] = {}
 _llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
-    model="openai/gpt-oss-120b",
+    model=GROQ_MODEL,
     temperature=0,
     max_tokens=7_000,
 )
