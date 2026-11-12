@@ -1,7 +1,7 @@
 import re
 from collections import OrderedDict
 
-from app.services.storage import load_agent_session, save_agent_session
+from app.services.storage import delete_agent_session, load_agent_session, save_agent_session
 
 _SESSION_RE = re.compile(r"^[A-Za-z0-9_.-]{8,128}$")
 _MAX_SESSIONS = 256
@@ -52,6 +52,23 @@ async def save_memory(session_id: str | None, messages: list[dict[str, str]]) ->
     _memory.move_to_end(valid)
     while len(_memory) > _MAX_SESSIONS:
         _memory.popitem(last=False)
+
+
+async def delete_memory(session_id: str | None) -> bool:
+    """Erase a session from both durable storage and the process fallback.
+
+    Returns False only for malformed IDs. Deleting an unknown session succeeds,
+    so callers cannot probe which session IDs exist.
+    """
+    valid = validate_session_id(session_id)
+    if not valid:
+        return False
+    _memory.pop(valid, None)
+    try:
+        await delete_agent_session(valid)
+    except Exception:
+        pass
+    return True
 
 
 def clear_memory_for_tests() -> None:

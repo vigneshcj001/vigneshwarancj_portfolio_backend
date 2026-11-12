@@ -1,13 +1,17 @@
 import asyncio
+import hashlib
 import json
 import logging
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 
 from app.ai.chain import assistant_chain, build_history
+from app.ai.okf import knowledge_version
 from app.agent.graph import AgentTurn, run_agent_turn, stream_agent_turn
-from app.agent.memory import load_memory, save_memory
+from app.agent.memory import delete_memory, load_memory, save_memory
+from app.config import ANSWER_CACHE_DAYS
+from app.services.storage import get_cached_answer, save_cached_answer
 from app.ai.presentation import LANGUAGE_NAMES, answer_status
 from app.ai.sanitizer import clean_output
 from app.limiter import limiter
@@ -21,16 +25,53 @@ BUSY_MESSAGE = "The assistant is busy right now — please try again in a minute
 _response_cache: dict[tuple[str, str], dict] = {}
 
 
-def _cache_key(payload: AssistantRequest) -> tuple[str, str] | None:
-    return None if payload.history or payload.session_id else (payload.language, payload.message.casefold())
+def _normalize_question(message: str) -> str:
+    return " ".join(message.casefold().split()).rstrip("?!. ")
 
 
-def _remember(key: tuple[str, str] | None, value: dict) -> None:
+def _cache_key(payload: AssistantRequest, raw_history: list[dict[str, str]]) -> str | None:
+    """Only opening questions are cached: follow-ups depend on conversation context.
+
+    The knowledge version is part of the key, so editing the Markdown knowledge
+    base invalidates every cached answer without manual cleanup.
+    """
+    if raw_history:
+        return None
+    material = f"{knowledge_version()}|{payload.language}|{_normalize_question(payload.message)}"
+    return hashlib.sha256(material.encode()).hexdigest()
+
+
+async def _cached(key: str | None) -> dict | None:
     if key is None:
-        return
+        return None
+    if key in _response_cache:
+        return _response_cache[key]
+    try:
+        stored = await get_cached_answer(key, ANSWER_CACHE_DAYS)
+    except Exception:
+        logger.warning("Answer cache read failed", exc_info=True)
+        return None
+    if stored and isinstance(stored.get("reply"), str):
+        _remember_locally(key, stored)
+        return stored
+    return None
+
+
+def _remember_locally(key: str, value: dict) -> None:
     if len(_response_cache) >= 256:
         _response_cache.pop(next(iter(_response_cache)))
     _response_cache[key] = value
+
+
+async def _remember(key: str | None, value: dict) -> None:
+    if key is None:
+        return
+    shared = {**value, "session_id": None}  # never share one visitor's session ID
+    _remember_locally(key, shared)
+    try:
+        await save_cached_answer(key, shared)
+    except Exception:
+        logger.warning("Answer cache write failed", exc_info=True)
 
 
 def _is_capacity_error(exc: Exception) -> bool:
@@ -74,21 +115,37 @@ def health_check():
     return {"status": "ok"}
 
 
+@router.delete("/api/assistant/session/{session_id}", status_code=204)
+@limiter.limit("20/minute")
+async def delete_session(request: Request, session_id: str):
+    """Erase a conversation's server-side history.
+
+    The session ID is a random value only the visitor's browser holds, so it acts
+    as the capability to delete. Unknown IDs also return 204 so the endpoint
+    cannot be used to discover which sessions exist.
+    """
+    if not await delete_memory(session_id):
+        raise HTTPException(status_code=400, detail="Invalid session ID")
+    return Response(status_code=204)
+
+
 @router.post("/api/assistant", response_model=AssistantResponse)
 @limiter.limit("100/day")
 @limiter.limit("10/minute")
 async def assistant_endpoint(request: Request, payload: AssistantRequest):
     try:
-        key = _cache_key(payload)
-        if key in _response_cache:
-            return AssistantResponse(**_response_cache[key])
         history_items, raw_history = await _history(payload)
+        key = _cache_key(payload, raw_history)
+        cached = await _cached(key)
+        if cached:
+            await _persist(payload, raw_history, cached["reply"])
+            return AssistantResponse(**{**cached, "session_id": payload.session_id})
         turn = await run_agent_turn(payload.message, raw_history, payload.language, payload.session_id)
         metadata = _metadata(turn, payload.session_id)
         if turn.direct_reply:
             response = {"reply": turn.direct_reply, **metadata}
             await _persist(payload, raw_history, turn.direct_reply)
-            _remember(key, response)
+            await _remember(key, response)
             return AssistantResponse(**response)
         chat_history = build_history(history_items)
         raw_reply = await asyncio.wait_for(
@@ -106,7 +163,7 @@ async def assistant_endpoint(request: Request, payload: AssistantRequest):
         reply = clean_output(raw_reply)
         response = {"reply": reply, **metadata}
         await _persist(payload, raw_history, reply)
-        _remember(key, response)
+        await _remember(key, response)
         return AssistantResponse(**response)
 
     except asyncio.TimeoutError as exc:
@@ -130,16 +187,18 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
     async def generate():
         accumulated = ""
         try:
-            key = _cache_key(payload)
-            if key in _response_cache:
-                cached = _response_cache[key]
+            history_items, raw_history = await _history(payload)
+            key = _cache_key(payload, raw_history)
+            cached = await _cached(key)
+            if cached:
                 metadata = {name: cached.get(name, default) for name, default in (
                     ("sources", []), ("followups", []), ("project", None),
-                    ("actions", []), ("tools", []), ("session_id", None),
+                    ("actions", []), ("tools", []),
                 )}
-                yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': cached['reply'], **metadata})}\n\n"
+                # Record the turn so follow-up questions keep their context.
+                await _persist(payload, raw_history, cached["reply"])
+                yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': cached['reply'], 'cached': True, 'session_id': payload.session_id, **metadata})}\n\n"
                 return
-            history_items, raw_history = await _history(payload)
             turn = None
             async for event in stream_agent_turn(payload.message, raw_history, payload.language, payload.session_id):
                 if await request.is_disconnected():
@@ -156,7 +215,7 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
             if turn.direct_reply:
                 response = {"reply": turn.direct_reply, **metadata}
                 await _persist(payload, raw_history, turn.direct_reply)
-                _remember(key, response)
+                await _remember(key, response)
                 yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': turn.direct_reply, **metadata})}\n\n"
                 return
             chat_history = build_history(history_items)
@@ -181,7 +240,7 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
             cleaned = clean_output(accumulated)
             response = {"reply": cleaned, **metadata}
             await _persist(payload, raw_history, cleaned)
-            _remember(key, response)
+            await _remember(key, response)
             yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': cleaned, **metadata})}\n\n"
 
         except TimeoutError:

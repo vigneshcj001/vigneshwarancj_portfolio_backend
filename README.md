@@ -88,8 +88,10 @@ Public endpoints:
 
 - `GET /` and `GET /api/health`: basic and detailed health.
 - `POST /api/assistant`: one JSON assistant response.
-- `POST /api/assistant/stream`: streaming assistant response.
-- `GET /api/resume`: generated PDF download.
+- `POST /api/assistant/stream`: streaming assistant response. Opening questions (no prior history) are cached in memory and, when configured, in PostgreSQL (`portfolio_answer_cache`, `ANSWER_CACHE_DAYS`, default 7). The cache key includes a hash of the knowledge base, so Markdown edits invalidate it.
+- `DELETE /api/assistant/session/{id}`: erase a conversation's server-side history (204 even for unknown IDs).
+- `POST /api/match`: job-description fit. Keyword evidence/gaps from the portfolio plus a schema-validated Groq requirement assessment; falls back to keywords only. The job text is not stored.
+- `GET /api/resume`, `/api/resume.docx`, `/api/resume.txt`: ATS-friendly résumé (single column, standard headings, contact in body, no tables/icons) from one content model in `app/services/resume_document.py`. `python scripts/export_resume.py ../vigneshwarancj-portfolio-website` refreshes the website's static copies offline.
 - `POST /api/translate`: ordered translation of text batches.
 - `GET /api/proof`: cached public GitHub/PyPI metadata.
 - `POST /api/demo/{slug}`: simulations for `aiora`, `pocketpet`, and `glycanbench`.
@@ -102,6 +104,7 @@ Admin endpoints require `X-Admin-Key`:
 
 - `GET /api/admin/content` and `PUT /api/admin/content`: read/save content revisions.
 - `GET /api/admin/analytics`: event aggregates.
+- `GET /api/admin/funnel?days=30`: daily page view → case study → résumé → job match → contact counts and top case studies.
 - `POST /api/admin/check-links`: check canonical content links.
 
 Saving a revision does not rebuild Markdown knowledge or publish frontend changes. Newsletter storage does not send newsletters. Frontend contact email delivery uses its separate EmailJS integration.

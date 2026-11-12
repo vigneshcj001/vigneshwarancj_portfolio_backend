@@ -42,6 +42,13 @@ async def init_storage() -> None:
               session_id TEXT PRIMARY KEY, messages JSONB NOT NULL DEFAULT '[]'::jsonb,
               updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             );
+            CREATE TABLE IF NOT EXISTS portfolio_answer_cache (
+              cache_key TEXT PRIMARY KEY, response JSONB NOT NULL,
+              hits INTEGER NOT NULL DEFAULT 0,
+              created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS portfolio_events_created_idx
+              ON portfolio_events (created_at, name);
         """)
 
 
@@ -117,6 +124,91 @@ async def analytics_summary() -> list[dict[str, Any]]:
         "FROM portfolio_events GROUP BY name ORDER BY count DESC"
     )
     return [dict(row) for row in rows]
+
+
+FUNNEL_STAGES: dict[str, tuple[str, ...]] = {
+    "visits": ("page_view",),
+    "case_studies": ("case_study_view",),
+    "resume": ("resume_view", "resume_download"),
+    "job_match": ("job_match_run",),
+    "contact": ("contact_success",),
+}
+
+
+async def funnel_summary(days: int) -> dict[str, Any]:
+    """Daily counts per funnel stage plus the most-viewed case studies."""
+    pool = _require_pool()
+    names = sorted({name for group in FUNNEL_STAGES.values() for name in group})
+    rows = await pool.fetch(
+        """
+        SELECT date_trunc('day', created_at)::date AS day, name, COUNT(*) AS count
+        FROM portfolio_events
+        WHERE created_at >= NOW() - make_interval(days => $1) AND name = ANY($2::text[])
+        GROUP BY day, name ORDER BY day
+        """,
+        days, names,
+    )
+    top = await pool.fetch(
+        """
+        SELECT properties->>'project' AS project, COUNT(*) AS count
+        FROM portfolio_events
+        WHERE created_at >= NOW() - make_interval(days => $1)
+          AND name = 'case_study_view' AND properties ? 'project'
+        GROUP BY project ORDER BY count DESC LIMIT 8
+        """,
+        days,
+    )
+    stage_of = {name: stage for stage, group in FUNNEL_STAGES.items() for name in group}
+    daily: dict[str, dict[str, int]] = {}
+    totals = dict.fromkeys(FUNNEL_STAGES, 0)
+    for row in rows:
+        stage = stage_of[row["name"]]
+        day = row["day"].isoformat()
+        bucket = daily.setdefault(day, dict.fromkeys(FUNNEL_STAGES, 0))
+        bucket[stage] += row["count"]
+        totals[stage] += row["count"]
+    return {
+        "days": days,
+        "stages": list(FUNNEL_STAGES),
+        "totals": totals,
+        "daily": [{"day": day, **counts} for day, counts in sorted(daily.items())],
+        "top_case_studies": [dict(row) for row in top],
+    }
+
+
+async def get_cached_answer(cache_key: str, max_age_days: int) -> dict[str, Any] | None:
+    if not _pool:
+        return None
+    value = await _pool.fetchval(
+        """
+        UPDATE portfolio_answer_cache SET hits = hits + 1
+        WHERE cache_key=$1 AND created_at >= NOW() - make_interval(days => $2)
+        RETURNING response
+        """,
+        cache_key, max_age_days,
+    )
+    if isinstance(value, str):
+        value = json.loads(value)
+    return value if isinstance(value, dict) else None
+
+
+async def save_cached_answer(cache_key: str, response: dict[str, Any]) -> None:
+    if not _pool:
+        return
+    await _pool.execute(
+        """
+        INSERT INTO portfolio_answer_cache(cache_key,response) VALUES($1,$2::jsonb)
+        ON CONFLICT(cache_key) DO UPDATE SET response=EXCLUDED.response, created_at=NOW(), hits=0
+        """,
+        cache_key, json.dumps(response),
+    )
+
+
+async def delete_agent_session(session_id: str) -> bool:
+    if not _pool:
+        return False
+    await _pool.execute("DELETE FROM portfolio_agent_sessions WHERE session_id=$1", session_id)
+    return True
 
 
 async def load_agent_session(session_id: str) -> list[dict[str, str]] | None:
