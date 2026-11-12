@@ -53,6 +53,10 @@ For a local frontend, set its build-time `PORTFOLIO_API_URL` to `http://127.0.0.
 - `LAYA_TIMEOUT_SECONDS`: classification timeout; defaults to `8`.
 - `DATABASE_URL`: optional PostgreSQL connection string. Configured storage creates its tables at startup; the database role needs the appropriate privileges. A configured but unreachable database can prevent startup.
 - `ADMIN_API_KEY`: required to use admin endpoints, supplied as `X-Admin-Key` on requests.
+- `TRUSTED_PROXY_COUNT`: number of reverse proxies that append to `X-Forwarded-For` (default `0`). **Set to `1` on Render/Railway**; otherwise every visitor shares the proxy's IP and therefore one rate-limit bucket. Left-most (client-supplied) entries are never trusted.
+- `EXTRA_ALLOWED_ORIGINS`: optional comma-separated CORS origins, e.g. `http://localhost:1234` for local frontend development.
+- `GITHUB_TOKEN`: optional read-only token for `/api/proof`, raising GitHub's limit from 60 to 5,000 requests/hour. Upstream failures back off for 5 minutes and serve stale data when available.
+- Errors, including rate limits (`429` with `Retry-After`), use the `{"detail": "..."}` shape. Every response carries an `X-Request-ID` that also appears in the access log. `/api/health` pings the database and reports `degraded` when configured storage is unreachable.
 - `FRONTEND_ORIGIN`: adds one allowed browser origin alongside the deployed portfolio origin.
 - `METADATA_CACHE_SECONDS`: public metadata cache duration; defaults to `3600`.
 - `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT`, and `LANGCHAIN_TRACING_V2`: optional LangSmith tracing. A supplied key enables tracing unless explicitly disabled with `LANGCHAIN_TRACING_V2=false`; traces can include user content and session metadata.

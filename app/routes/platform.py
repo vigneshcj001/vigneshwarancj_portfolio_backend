@@ -1,10 +1,12 @@
+import re
 import secrets
+import time
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import Response
 
-from app.config import ADMIN_API_KEY, LAYA_API_KEY
+from app.config import ADMIN_API_KEY, APP_VERSION, LAYA_API_KEY
 from app.content import load_portfolio
 from app.limiter import limiter
 from app.schemas.platform import ContentPayload, ContactPayload, DemoPayload, EventPayload, NewsletterPayload
@@ -13,8 +15,8 @@ from app.services.proof import MetadataUnavailable, check_links as check_content
 from app.services.storage import (
     StorageUnavailable,
     analytics_summary,
-    connected,
     latest_content,
+    ping,
     record_event as store_event,
     save_contact,
     save_content_revision,
@@ -22,6 +24,8 @@ from app.services.storage import (
 )
 
 router = APIRouter()
+_STARTED = time.monotonic()
+_OG_SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 
 
 def _admin(key: str | None) -> None:
@@ -35,9 +39,14 @@ def _storage_error(error: StorageUnavailable):
 
 @router.get("/api/health")
 async def detailed_health():
+    database = await ping()
     return {
-        "status": "ok",
-        "database": "connected" if connected() else "not_configured",
+        # "degraded" means optional storage is configured but unreachable; the
+        # assistant and public pages still work without it.
+        "status": "degraded" if database == "unreachable" else "ok",
+        "version": APP_VERSION,
+        "uptime_seconds": int(time.monotonic() - _STARTED),
+        "database": database,
         "assistant": {
             "knowledge": "okf",
             "router": "laya" if LAYA_API_KEY else "local_fallback",
@@ -130,6 +139,8 @@ async def check_links(x_admin_key: str | None = Header(default=None)):
 
 @router.get("/api/og/{slug}.svg")
 async def project_og(slug: str):
+    if not _OG_SLUG.match(slug):
+        raise HTTPException(status_code=404, detail="Not found")
     title = slug.replace("-", " ").title()[:70]
     safe = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g"><stop stop-color="#0f172a"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><text x="72" y="110" fill="#93c5fd" font-family="Arial" font-size="28" font-weight="700">VIGNESHWARAN C. J. · CASE STUDY</text><text x="72" y="300" fill="white" font-family="Arial" font-size="70" font-weight="800">{safe}</text><text x="72" y="410" fill="#cbd5e1" font-family="Arial" font-size="32">Engineering · AI · Research</text></svg>'''
