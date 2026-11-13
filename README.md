@@ -168,6 +168,8 @@ python -m unittest discover -s tests -v
 
 Coverage includes retrieval quality (a recall@4 and MRR gate over `evals/retrieval_cases.json`), routing, tool plans, action validation, contextual recommendations, streamed operation summaries, history bounds, session isolation and erasure, answer-cache keys, JSONB decoding, translation validation, job-match keyword precision and output parsing, résumé rendering in all three formats, proxy-aware rate-limit keys, the 429 error shape, and demo behavior. Tests do not establish production provider availability, live answer quality, PostgreSQL connectivity, email delivery, or Docker runtime behavior. Frontend Playwright suites cover browser action outcomes separately.
 
+GitHub Actions (`.github/workflows/ci.yml`) runs the knowledge validator, these tests, and the retrieval report on Python 3.11 for pushes to `main` and for pull requests.
+
 Run the retrieval evaluation directly to see per-question rankings:
 
 ```powershell

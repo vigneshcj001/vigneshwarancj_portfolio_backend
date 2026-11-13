@@ -165,6 +165,9 @@ class ResumeDocumentTests(unittest.TestCase):
         package = zipfile.ZipFile(io.BytesIO(render_docx(doc)))
         for part in ("[Content_Types].xml", "word/document.xml", "word/styles.xml", "docProps/core.xml"):
             minidom.parseString(package.read(part))
+        document = package.read("word/document.xml").decode()
+        self.assertIn("<w:tab/>", document)
+        self.assertNotIn("\t", document)  # literal tabs are not tabs in OOXML
         text = render_text(doc)
         self.assertIn("PROFESSIONAL SUMMARY", text)
         self.assertNotIn("…", text)
