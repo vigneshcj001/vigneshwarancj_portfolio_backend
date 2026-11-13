@@ -151,7 +151,8 @@ def _docx_body(doc: ResumeDocument) -> str:
         elif block.kind == "meta":
             parts.append(_paragraph(_run(block.text, italic=True, color="4B5563")))
         elif block.kind == "bullet":
-            parts.append(_paragraph(_run(f"•\t{block.text}"), indent=True))
+            # A literal tab inside <w:t> is not a tab in OOXML; use the <w:tab/> element.
+            parts.append(_paragraph('<w:r><w:t xml:space="preserve">•</w:t><w:tab/></w:r>' + _run(block.text), indent=True))
         elif block.kind == "labeled":
             parts.append(_paragraph(_run(f"{block.label}: ", bold=True) + _run(block.text)))
         else:

@@ -232,9 +232,10 @@ def _model():
     if _llm is None:
         from langchain_groq import ChatGroq
 
-        from app.config import GROQ_API_KEY
+        from app.config import GROQ_API_KEY, GROQ_MODEL
 
-        _llm = ChatGroq(groq_api_key=GROQ_API_KEY, model="openai/gpt-oss-120b", temperature=0.1, max_tokens=1400)
+        # Near-deterministic: this is classification against evidence, not conversation.
+        _llm = ChatGroq(groq_api_key=GROQ_API_KEY, model=GROQ_MODEL, temperature=0.1, max_tokens=1400)
     return _llm
 
 

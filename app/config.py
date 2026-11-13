@@ -43,6 +43,13 @@ ALLOWED_ORIGINS: list[str] = list(dict.fromkeys(filter(None, [
 # 0 = use the socket peer address (safe default when exposed directly).
 # Set to 1 on Render/Railway so each visitor gets their own rate-limit bucket.
 TRUSTED_PROXY_COUNT: int = max(0, int(os.getenv("TRUSTED_PROXY_COUNT", "0") or 0))
+# One place to pin the generation model and its sampling settings.
+GROQ_MODEL: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+# Conversational answers. Lower values (0.2–0.4) trade warmth for stricter
+# adherence to retrieved facts; see AI_SYSTEM_DESIGN.md.
+ANSWER_TEMPERATURE: float = min(1.0, max(0.0, float(os.getenv("ANSWER_TEMPERATURE", "0.65") or 0.65)))
+# Days to keep chat sessions and cached answers in PostgreSQL before purging.
+SESSION_RETENTION_DAYS: int = max(1, int(os.getenv("SESSION_RETENTION_DAYS", "30") or 30))
 ANSWER_CACHE_DAYS: int = max(1, int(os.getenv("ANSWER_CACHE_DAYS", "7") or 7))
 GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 APP_VERSION: str = os.getenv("APP_VERSION", os.getenv("RENDER_GIT_COMMIT", "dev"))[:12]

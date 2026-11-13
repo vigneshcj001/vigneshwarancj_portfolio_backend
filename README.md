@@ -1,8 +1,8 @@
 # Portfolio Assistant Backend
 
-FastAPI backend for Vigneshwaran C. J.'s portfolio. It serves a grounded AI assistant, résumé PDFs, page translation, project simulations, public activity metadata, and optional PostgreSQL-backed platform features.
+FastAPI backend for Vigneshwaran C. J.'s portfolio. It serves a grounded AI assistant, job-description matching, ATS-friendly résumés, page translation, project simulations, public activity metadata, and optional PostgreSQL-backed platform features.
 
-[Assistant architecture](ASSISTANT_ARCHITECTURE.md) · [Setup and verification guide](AGENTIC_ASSISTANT.md)
+[Assistant architecture](ASSISTANT_ARCHITECTURE.md) · [AI system design review](AI_SYSTEM_DESIGN.md) · [Setup and verification guide](AGENTIC_ASSISTANT.md)
 
 ## Capabilities
 
@@ -10,10 +10,13 @@ FastAPI backend for Vigneshwaran C. J.'s portfolio. It serves a grounded AI assi
 - Local prompt checks and optional Laya scope/topic classification.
 - A bounded LangGraph tool plan over committed Markdown evidence.
 - Groq answers with citations, project-specific follow-ups, and prepared UI actions.
-- PostgreSQL session persistence with bounded process-memory fallback.
-- Canonical-content résumé PDF generation and translation into six target languages.
+- Job-description match: keyword evidence and gaps, plus a schema-validated requirement assessment.
+- PostgreSQL session persistence with bounded process-memory fallback, server-side erasure, and a retention purge.
+- A shared answer cache for opening questions, invalidated automatically when knowledge changes.
+- ATS-friendly résumé as PDF, DOCX, and plain text from canonical content; translation into six target languages.
+- An offline retrieval evaluation that gates retrieval quality in tests.
 - Cached GitHub/PyPI metadata and safe, deterministic project simulations.
-- Contact/subscription storage, aggregate analytics, and protected admin revision/link-check endpoints.
+- Contact/subscription storage, a conversion funnel, aggregate analytics, and protected admin revision/link-check endpoints.
 
 ## Stack
 
@@ -59,6 +62,10 @@ For a local frontend, set its build-time `PORTFOLIO_API_URL` to `http://127.0.0.
 - Errors, including rate limits (`429` with `Retry-After`), use the `{"detail": "..."}` shape. Every response carries an `X-Request-ID` that also appears in the access log. `/api/health` pings the database and reports `degraded` when configured storage is unreachable.
 - `FRONTEND_ORIGIN`: adds one allowed browser origin alongside the deployed portfolio origin.
 - `METADATA_CACHE_SECONDS`: public metadata cache duration; defaults to `3600`.
+- `GROQ_MODEL`: generation model for the assistant, job match, and translation; defaults to `openai/gpt-oss-120b`.
+- `ANSWER_TEMPERATURE`: assistant answer sampling temperature; defaults to `0.65`. Lower values (0.2–0.4) favour strict adherence to retrieved facts; see [AI_SYSTEM_DESIGN.md](AI_SYSTEM_DESIGN.md).
+- `ANSWER_CACHE_DAYS`: days a cached opening answer stays valid; defaults to `7`.
+- `SESSION_RETENTION_DAYS`: days an idle chat session is kept in PostgreSQL before the startup purge; defaults to `30`.
 - `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT`, and `LANGCHAIN_TRACING_V2`: optional LangSmith tracing. A supplied key enables tracing unless explicitly disabled with `LANGCHAIN_TRACING_V2=false`; traces can include user content and session metadata.
 
 Without PostgreSQL, the assistant still works with process-memory fallback. Contact/subscription writes and storage-dependent admin operations return unavailable responses; analytics ingestion can acknowledge events without persisting them.
@@ -118,6 +125,13 @@ Edit indexed documents and validate from this repository:
 ```powershell
 node scripts/check_okf.mjs
 python -m unittest discover -s tests -v
+python -m evals.retrieval_eval
+```
+
+When adding a document, add at least one labelled question for it to `evals/retrieval_cases.json` so the retrieval gate covers it. After content changes, refresh the website's static résumé copies:
+
+```powershell
+python scripts/export_resume.py ../vigneshwarancj-portfolio-website
 ```
 
 The Node validator requires Node.js. Application startup also validates knowledge with Python. Restart the backend after content changes because loaded documents are cached.
@@ -133,11 +147,13 @@ app/content.py            Indexed Markdown validation and portfolio compilation
 app/agent/                Graph, typed tools/actions, and session memory
 app/ai/                   Routing, lexical retrieval, generation, and presentation
 app/routes/               Assistant, résumé, platform, and translation endpoints
-app/services/             PostgreSQL storage, metadata, demos, and translation
+app/services/             Storage, job match, résumé document model, metadata, demos, translation
 app/schemas/              Platform and translation request validation
 app/models.py             Assistant request/response models
 knowledge/                Canonical structured Markdown evidence
-scripts/check_okf.mjs      Knowledge-bundle validator
+evals/                    Retrieval evaluation cases and runner
+scripts/check_okf.mjs     Knowledge-bundle validator
+scripts/export_resume.py  Offline PDF/DOCX/TXT résumé export
 tests/                    Unit and asynchronous regression tests
 Dockerfile                Non-root Python 3.11 container
 ```
@@ -150,7 +166,15 @@ With dependencies installed and the virtual environment active:
 python -m unittest discover -s tests -v
 ```
 
-Coverage includes retrieval, routing, tool plans, action validation, contextual recommendations, streamed operation summaries, history bounds, session isolation, JSONB decoding, translation validation, and demo behavior. Tests do not establish production provider availability, live answer quality, PostgreSQL connectivity, email delivery, or Docker runtime behavior. Frontend Playwright suites cover browser action outcomes separately.
+Coverage includes retrieval quality (a recall@4 and MRR gate over `evals/retrieval_cases.json`), routing, tool plans, action validation, contextual recommendations, streamed operation summaries, history bounds, session isolation and erasure, answer-cache keys, JSONB decoding, translation validation, job-match keyword precision and output parsing, résumé rendering in all three formats, proxy-aware rate-limit keys, the 429 error shape, and demo behavior. Tests do not establish production provider availability, live answer quality, PostgreSQL connectivity, email delivery, or Docker runtime behavior. Frontend Playwright suites cover browser action outcomes separately.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs the knowledge validator, these tests, and the retrieval report on Python 3.11 for pushes to `main` and for pull requests.
+
+Run the retrieval evaluation directly to see per-question rankings:
+
+```powershell
+python -m evals.retrieval_eval --verbose
+```
 
 ## Docker
 
@@ -165,8 +189,8 @@ The command passes the previously set host environment values into the container
 
 ## Current limits
 
-Messages are limited to 500 characters and request bodies to 64 KiB. Generation history is bounded to eight items within 1,200 characters. Assistant endpoints allow 10 requests/minute and 100/day per IP, with a 30-second generation timeout.
+Messages are limited to 500 characters and request bodies to 64 KiB. Generation history is bounded to eight items within 1,200 characters. Assistant endpoints allow 10 requests/minute and 100/day per visitor IP, with a 30-second generation timeout. Job match allows 6/minute and 40/day.
 
-Prompt guards and classification are heuristic; grounding instructions do not guarantee correct answers. Session IDs partition history but are not account authentication. Process fallback, rate-limit state, and caches are not shared across workers or durable across restarts. Browser Clear chat does not erase the server session. Suggestions are curated templates rather than a second generated response.
+Prompt guards and classification are heuristic; grounding instructions do not guarantee correct answers, and no automated check verifies answers against retrieved context. Retrieval is lexical, so some paraphrased questions miss their document (measured paraphrase recall@4: 0.857). Session IDs partition history but are not account authentication. Rate-limit state and process fallback are not shared across workers; the answer cache is shared only through PostgreSQL. Suggestions are curated templates rather than a second generated response. [AI_SYSTEM_DESIGN.md](AI_SYSTEM_DESIGN.md) lists the recommended next steps.
 
 For the complete execution order, memory budgets, streaming contract, and configuration notes, see [ASSISTANT_ARCHITECTURE.md](ASSISTANT_ARCHITECTURE.md).

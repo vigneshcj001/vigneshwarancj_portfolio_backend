@@ -1,0 +1,30 @@
+{
+  "description": "Retrieval evaluation for OKF lexical search. Each case lists the knowledge documents a correct answer needs; a case passes when any expected document is in the top-k results. 'paraphrase' cases avoid the document's own keywords to measure the limits of lexical matching.",
+  "k": 4,
+  "cases": [
+    {"id": "pocketpet-direct", "query": "What is PocketPet?", "topic": "projects", "expected": ["projects/pocketpet.md"], "style": "direct"},
+    {"id": "pocketpet-safety", "query": "How does PocketPet keep the browser agent safe?", "topic": "projects", "expected": ["projects/pocketpet.md"], "style": "direct"},
+    {"id": "syncly-direct", "query": "Tell me about Syncly", "topic": "projects", "expected": ["projects/syncly.md"], "style": "direct"},
+    {"id": "syncly-chat", "query": "Which project has real-time chat with Socket.IO?", "topic": "projects", "expected": ["projects/syncly.md"], "style": "direct"},
+    {"id": "glycanbench-direct", "query": "What does GlycanBench do?", "topic": "projects", "expected": ["projects/glycanbench-a-unified-resource-for-working-with-glycans.md", "research/publications/glycanbench.md"], "style": "direct"},
+    {"id": "aiora-direct", "query": "What is AIORA and what did he build for it?", "topic": "experience", "expected": ["experience/junior-software-developer-ceiyone-tech-works-pvt-ltd.md"], "style": "direct"},
+    {"id": "aiora-whatsapp", "query": "WhatsApp commerce platform microservices", "topic": "experience", "expected": ["experience/junior-software-developer-ceiyone-tech-works-pvt-ltd.md"], "style": "direct"},
+    {"id": "egfr-direct", "query": "Explain the EGFR inhibitor thesis", "topic": "research", "expected": ["research/publications/egfr.md", "projects/explainable-machine-learning-based-approach-to-developing-potent-egfr-inhibitors.md"], "style": "direct"},
+    {"id": "qspr-direct", "query": "What were the QSPR results for posaconazole?", "topic": "projects", "expected": ["projects/qspr-for-posaconazole-sedds.md", "experience/research-intern-manipal-institute-of-technology.md"], "style": "direct"},
+    {"id": "manipal-intern", "query": "What did he do at Manipal?", "topic": "experience", "expected": ["experience/research-intern-manipal-institute-of-technology.md"], "style": "direct"},
+    {"id": "intern-ai", "query": "What did he work on as an AI engineer intern?", "topic": "experience", "expected": ["experience/ai-engineer-intern-ceiyone-tech-works-pvt-ltd.md"], "style": "direct"},
+    {"id": "mtech", "query": "Where did he do his M.Tech?", "topic": "education", "expected": ["education/master-of-technology-in-big-data-biology.md"], "style": "direct"},
+    {"id": "btech", "query": "Which college for the Bachelor of Technology?", "topic": "education", "expected": ["education/bachelor-of-technology.md"], "style": "direct"},
+    {"id": "certs", "query": "What certifications does he have?", "topic": "education", "expected": ["certifications/namaste-reactjs.md", "certifications/namaste-node-js.md"], "style": "direct"},
+    {"id": "skills", "query": "What programming languages and frameworks does he know?", "topic": "skills", "expected": ["skills.md"], "style": "direct"},
+    {"id": "contact", "query": "How can I contact him?", "topic": "contact", "expected": ["profile.md"], "style": "direct"},
+    {"id": "bioethanol", "query": "machine learning for bioethanol sugars", "topic": "research", "expected": ["research/publications/lignocellulosic.md", "projects/prediction-of-lignocellulosic-components-and-fermentable-sugars-for-bioethanol-p.md"], "style": "direct"},
+    {"id": "para-desktop-pet", "query": "Has he built a desktop companion app that can browse websites for you?", "topic": "projects", "expected": ["projects/pocketpet.md"], "style": "paraphrase"},
+    {"id": "para-dev-networking", "query": "Did he make something like a dating app but for meeting other developers?", "topic": "projects", "expected": ["projects/syncly.md"], "style": "paraphrase"},
+    {"id": "para-sugar-molecules", "query": "Any work on carbohydrate structures and sugar chains?", "topic": "research", "expected": ["projects/glycanbench-a-unified-resource-for-working-with-glycans.md", "research/publications/glycanbench.md"], "style": "paraphrase"},
+    {"id": "para-cancer-drugs", "query": "Has he done anything on cancer drug discovery?", "topic": "research", "expected": ["research/publications/egfr.md", "projects/explainable-machine-learning-based-approach-to-developing-potent-egfr-inhibitors.md"], "style": "paraphrase"},
+    {"id": "para-current-job", "query": "Where is he working right now?", "topic": "experience", "expected": ["experience/junior-software-developer-ceiyone-tech-works-pvt-ltd.md"], "style": "paraphrase"},
+    {"id": "para-teaching", "query": "Does he have any teaching background?", "topic": "experience", "expected": ["experience/tutor-kamakshi-tuition-centre.md"], "style": "paraphrase"},
+    {"id": "para-gold-invoices", "query": "Has he automated checking of shipping paperwork with vision models?", "topic": "experience", "expected": ["experience/junior-software-developer-ceiyone-tech-works-pvt-ltd.md"], "style": "paraphrase"}
+  ]
+}

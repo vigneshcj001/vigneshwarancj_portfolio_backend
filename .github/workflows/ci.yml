@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    env:
+      # Config requires a value at import; tests mock every model call.
+      GROQ_API_KEY: ci-placeholder
+      LANGCHAIN_TRACING_V2: "false"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          # Matches the Dockerfile runtime.
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: python -m pip install -r requirements.txt
+      - name: Validate knowledge bundle
+        run: node scripts/check_okf.mjs
+      - name: Unit tests (includes the retrieval-quality gate)
+        run: python -m unittest discover -s tests -v
+      - name: Retrieval evaluation report
+        run: python -m evals.retrieval_eval

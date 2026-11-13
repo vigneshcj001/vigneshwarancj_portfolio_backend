@@ -59,6 +59,31 @@ def _tokens(value: str) -> set[str]:
     }
 
 
+# Lexical search only matches shared words, so questions phrased in everyday
+# terms ("where is he working now?") miss records written in résumé terms
+# ("Dec 2025 – Present"). This small, general vocabulary bridges the most
+# common recruiter phrasings. Measured by evals/retrieval_eval.py.
+_QUERY_EXPANSIONS = {
+    "now": "present current", "currently": "present current", "current": "present",
+    "today": "present current", "presently": "present current",
+    # "work" alone is deliberately absent: "any work on X?" is about topics, not jobs.
+    "job": "role employment", "jobs": "role employment", "working": "role experience",
+    "employer": "company", "company": "employer",
+    "teaching": "tutor taught", "teach": "tutor taught",
+    "college": "university education", "degree": "education university",
+    "studied": "education university", "study": "education",
+    "cancer": "oncology tumor", "drug": "inhibitor compound",
+}
+
+
+def _query_tokens(value: str) -> set[str]:
+    tokens = _tokens(value)
+    for token in list(tokens):
+        if token in _QUERY_EXPANSIONS:
+            tokens |= _tokens(_QUERY_EXPANSIONS[token])
+    return tokens
+
+
 def retrieve_with_sources(query: str, topic: str = "general", limit: int = 4, max_chars: int = 12000) -> KnowledgeResult:
     topic_terms = {
         "profile": "profile contact availability biography",
@@ -69,7 +94,7 @@ def retrieve_with_sources(query: str, topic: str = "general", limit: int = 4, ma
         "education": "education degrees certifications",
         "contact": "contact email social availability links",
     }.get(topic, "profile projects skills experience research")
-    query_tokens = _tokens(f"{query} {topic_terms}")
+    query_tokens = _query_tokens(f"{query} {topic_terms}")
     ranked: list[tuple[int, KnowledgeEntry]] = []
     for entry in load_bundle():
         title_tokens = _tokens(f"{entry.title} {entry.tags} {entry.path}")

@@ -3,7 +3,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
 
-from app.config import GROQ_API_KEY
+from app.config import ANSWER_TEMPERATURE, GROQ_API_KEY, GROQ_MODEL
 
 SYSTEM_PROMPT = """
 You're a close friend of Vigneshwaran CJ who knows his work, projects, and background. Someone walked up and started chatting with you about him.
@@ -26,8 +26,8 @@ Relevant portfolio knowledge:
 
 _llm = ChatGroq(
     groq_api_key=GROQ_API_KEY,
-    model="openai/gpt-oss-120b",
-    temperature=0.65,
+    model=GROQ_MODEL,
+    temperature=ANSWER_TEMPERATURE,
     max_tokens=400,
 )
 
