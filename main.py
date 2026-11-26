@@ -11,6 +11,7 @@ from app.config import ALLOWED_ORIGINS
 from app.limiter import limiter
 from app.middleware import RequestContextMiddleware, RequestSizeLimitMiddleware, SecurityHeadersMiddleware
 from app.routes.assistant import router
+from app.routes.community import router as community_router
 from app.routes.resume import router as resume_router
 from app.routes.platform import router as platform_router
 from app.routes.translation import router as translation_router
@@ -81,7 +82,7 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "X-Admin-Key"],
-    expose_headers=["Retry-After", "X-Request-ID"],
+    expose_headers=["Retry-After", "X-Request-ID", "Content-Disposition", "X-Matched-Terms"],
     max_age=600,
 )
 
@@ -90,3 +91,4 @@ app.include_router(router)
 app.include_router(resume_router)
 app.include_router(platform_router)
 app.include_router(translation_router)
+app.include_router(community_router)

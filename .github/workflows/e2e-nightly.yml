@@ -1,0 +1,61 @@
+name: End-to-end (real backend)
+
+# Starts the real API (no mocks) and checks the public endpoints and one live
+# assistant answer. Needs the GROQ_API_KEY repository secret; skips without it.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"  # nightly 02:00 UTC
+
+jobs:
+  e2e:
+    runs-on: ubuntu-24.04
+    env:
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      LAYA_API_KEY: ${{ secrets.LAYA_API_KEY }}
+      LANGCHAIN_TRACING_V2: "false"
+    steps:
+      - name: Check for model credentials
+        id: creds
+        run: |
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "::notice::GROQ_API_KEY secret not set; skipping end-to-end checks."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v5
+        if: steps.creds.outputs.ready == 'true'
+      - uses: actions/setup-python@v6
+        if: steps.creds.outputs.ready == 'true'
+        with:
+          python-version: "3.11"
+          cache: pip
+      - if: steps.creds.outputs.ready == 'true'
+        run: python -m pip install -r requirements.txt
+      - name: Start API
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          python -m uvicorn main:app --port 8080 > api.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/api/health && exit 0; sleep 1; done
+          cat api.log; exit 1
+      - name: Public endpoints respond
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          set -e
+          curl -fsS http://127.0.0.1:8080/api/health | grep -q '"status"'
+          curl -fsS -o resume.pdf http://127.0.0.1:8080/api/resume && head -c 5 resume.pdf | grep -q '%PDF'
+          curl -fsS http://127.0.0.1:8080/api/resume.txt | grep -q 'WORK EXPERIENCE'
+          curl -fsS -X POST http://127.0.0.1:8080/api/match -H 'Content-Type: application/json' \
+            -d '{"job_description":"Backend engineer with Python, FastAPI, PostgreSQL, Redis and Docker experience to build APIs.","use_ai":false}' \
+            | grep -q '"generated_by":"keywords"'
+      - name: Live assistant answer is grounded
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          set -e
+          curl -fsS -N -X POST http://127.0.0.1:8080/api/assistant/stream -H 'Content-Type: application/json' \
+            -d '{"message":"What is PocketPet built with?","language":"en","history":[]}' > stream.txt
+          grep -q '"type": "done"' stream.txt || grep -q '"type":"done"' stream.txt
+          grep -qi 'tauri\|rust' stream.txt
+      - if: failure() && steps.creds.outputs.ready == 'true'
+        run: cat api.log

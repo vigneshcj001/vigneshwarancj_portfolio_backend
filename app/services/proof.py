@@ -32,12 +32,54 @@ def _fetch_json(url: str) -> Any:
         return json.load(response)
 
 
+def summarize_activity(events: list[dict[str, Any]], now: datetime | None = None, days: int = 30) -> dict[str, Any]:
+    """Public push activity over the last `days` from GitHub's events feed."""
+    now = now or datetime.now(timezone.utc)
+    pushes = commits = 0
+    repos: dict[str, str] = {}
+    last_push = None
+    for event in events:
+        if event.get("type") != "PushEvent":
+            continue
+        try:
+            created = datetime.fromisoformat(str(event["created_at"]).replace("Z", "+00:00"))
+        except (KeyError, ValueError):
+            continue
+        if (now - created).days >= days:
+            continue
+        pushes += 1
+        payload = event.get("payload") or {}
+        commits += int(payload.get("distinct_size") or payload.get("size") or 0)
+        name = (event.get("repo") or {}).get("name", "")
+        if name and name not in repos:
+            repos[name] = created.isoformat()
+        last_push = max(last_push or created, created)
+    return {
+        "days": days,
+        "pushes": pushes,
+        "commits": commits,
+        "active_repos": [{"name": name.split("/")[-1], "url": f"https://github.com/{name}", "last_push": when} for name, when in list(repos.items())[:5]],
+        "last_push": last_push.isoformat() if last_push else None,
+    }
+
+
+def _fetch_activity() -> dict[str, Any] | None:
+    # Optional: the proof card still renders when the events feed is unavailable.
+    try:
+        events = _fetch_json("https://api.github.com/users/vigneshcj001/events/public?per_page=100")
+        return summarize_activity(events if isinstance(events, list) else [])
+    except Exception:
+        return None
+
+
 async def _refresh() -> dict[str, Any]:
-    repos, pypi = await asyncio.gather(
+    repos, pypi, activity = await asyncio.gather(
         asyncio.to_thread(_fetch_json, "https://api.github.com/users/vigneshcj001/repos?sort=updated&per_page=6"),
         asyncio.to_thread(_fetch_json, "https://pypi.org/pypi/glycanbench/json"),
+        asyncio.to_thread(_fetch_activity),
     )
     return {
+        "activity": activity,
         "github": [
             {"name": item["name"], "url": item["html_url"], "stars": item["stargazers_count"], "updated_at": item["updated_at"]}
             for item in repos[:6]

@@ -66,6 +66,7 @@ For a local frontend, set its build-time `PORTFOLIO_API_URL` to `http://127.0.0.
 - `ANSWER_TEMPERATURE`: assistant answer sampling temperature; defaults to `0.65`. Lower values (0.2–0.4) favour strict adherence to retrieved facts; see [AI_SYSTEM_DESIGN.md](AI_SYSTEM_DESIGN.md).
 - `ANSWER_CACHE_DAYS`: days a cached opening answer stays valid; defaults to `7`.
 - `SESSION_RETENTION_DAYS`: days an idle chat session is kept in PostgreSQL before the startup purge; defaults to `30`.
+- `RESEND_API_KEY`, `NEWSLETTER_FROM`, `UNSUBSCRIBE_SECRET`: all three enable newsletter delivery via Resend; without them the send endpoint only reports what is missing. `PUBLIC_API_URL` sets the origin used in unsubscribe links.
 - `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT`, and `LANGCHAIN_TRACING_V2`: optional LangSmith tracing. A supplied key enables tracing unless explicitly disabled with `LANGCHAIN_TRACING_V2=false`; traces can include user content and session metadata.
 
 Without PostgreSQL, the assistant still works with process-memory fallback. Contact/subscription writes and storage-dependent admin operations return unavailable responses; analytics ingestion can acknowledge events without persisting them.
@@ -98,6 +99,11 @@ Public endpoints:
 - `POST /api/assistant/stream`: streaming assistant response. Opening questions (no prior history) are cached in memory and, when configured, in PostgreSQL (`portfolio_answer_cache`, `ANSWER_CACHE_DAYS`, default 7). The cache key includes a hash of the knowledge base, so Markdown edits invalidate it.
 - `DELETE /api/assistant/session/{id}`: erase a conversation's server-side history (204 even for unknown IDs).
 - `POST /api/match`: job-description fit. Keyword evidence/gaps from the portfolio plus a schema-validated Groq requirement assessment; falls back to keywords only. The job text is not stored.
+- `POST /api/resume/tailored`: résumé (PDF, DOCX, or TXT) reordered for one job description. Only technologies the description names *and* the portfolio documents are emphasised, so no skill is ever added. The description is not stored.
+- `POST /api/match/share`, `GET /api/match/share/{id}`: 30-day share links for a job-match *result* (never the description). Needs PostgreSQL.
+- `POST /api/testimonials`, `GET /api/testimonials`: moderated recommendations (consent required; only approved ones are returned).
+- `POST /api/client-errors`: first-party browser error reports (truncated, no query strings, kept 30 days).
+- `GET /api/newsletter/unsubscribe`: signed one-click unsubscribe.
 - `GET /api/resume`, `/api/resume.docx`, `/api/resume.txt`: ATS-friendly résumé (single column, standard headings, contact in body, no tables/icons) from one content model in `app/services/resume_document.py`. `python scripts/export_resume.py ../vigneshwarancj-portfolio-website` refreshes the website's static copies offline.
 - `POST /api/translate`: ordered translation of text batches.
 - `GET /api/proof`: cached public GitHub/PyPI metadata.
@@ -112,6 +118,10 @@ Admin endpoints require `X-Admin-Key`:
 - `GET /api/admin/content` and `PUT /api/admin/content`: read/save content revisions.
 - `GET /api/admin/analytics`: event aggregates.
 - `GET /api/admin/funnel?days=30`: daily page view → case study → résumé → job match → contact counts and top case studies.
+- `GET /api/admin/metrics`: AI latency percentiles, cache hit and refusal rates, output-guard removals, estimated tokens (per process).
+- `GET /api/admin/testimonials`, `PUT /api/admin/testimonials/{id}`: review recommendations.
+- `POST /api/admin/newsletter/send`: dry run by default; sends through Resend when configured.
+- `GET /api/admin/client-errors`: recent browser error reports.
 - `POST /api/admin/check-links`: check canonical content links.
 
 Saving a revision does not rebuild Markdown knowledge or publish frontend changes. Newsletter storage does not send newsletters. Frontend contact email delivery uses its separate EmailJS integration.
@@ -168,7 +178,13 @@ python -m unittest discover -s tests -v
 
 Coverage includes retrieval quality (a recall@4 and MRR gate over `evals/retrieval_cases.json`), routing, tool plans, action validation, contextual recommendations, streamed operation summaries, history bounds, session isolation and erasure, answer-cache keys, JSONB decoding, translation validation, job-match keyword precision and output parsing, résumé rendering in all three formats, proxy-aware rate-limit keys, the 429 error shape, and demo behavior. Tests do not establish production provider availability, live answer quality, PostgreSQL connectivity, email delivery, or Docker runtime behavior. Frontend Playwright suites cover browser action outcomes separately.
 
-GitHub Actions (`.github/workflows/ci.yml`) runs the knowledge validator, these tests, and the retrieval report on Python 3.11 for pushes to `main` and for pull requests.
+GitHub Actions (`.github/workflows/ci.yml`) runs the knowledge validator, these tests, and the retrieval report on Python 3.11 for pushes to `main` and for pull requests. Two more workflows use the real model and need the `GROQ_API_KEY` repository secret (they skip without it): `answer-eval.yml` (weekly and on demand) and `e2e-nightly.yml` (real API, no mocks).
+
+Answer-quality evaluation against the live model (uses Groq credits):
+
+```powershell
+python -m evals.answer_eval --judge --report answer-eval-report.json
+```
 
 Run the retrieval evaluation directly to see per-question rankings:
 

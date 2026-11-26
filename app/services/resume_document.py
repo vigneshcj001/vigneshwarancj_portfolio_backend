@@ -91,7 +91,31 @@ def _link(url: str) -> str:
     return url.removeprefix("https://").removeprefix("http://").rstrip("/")
 
 
-def build_resume() -> ResumeDocument:
+def _relevance(text: str, focus: list[str]) -> int:
+    """How many focus technologies a piece of résumé text mentions."""
+    if not focus:
+        return 0
+    from app.services.match import _canonical, _mentions  # local import: match imports retrieval
+
+    return sum(1 for term in focus if _mentions(text, _canonical(term), term))
+
+
+def _prioritise(items: list, focus: list[str], text=lambda item: item) -> list:
+    """Stable sort: items mentioning more focus terms first, original order otherwise."""
+    if not focus:
+        return list(items)
+    ranked = sorted(enumerate(items), key=lambda pair: (-_relevance(text(pair[1]), focus), pair[0]))
+    return [item for _, item in ranked]
+
+
+def build_resume(focus_terms: list[str] | None = None) -> ResumeDocument:
+    """Build the ATS résumé. With ``focus_terms`` it is tailored to a job.
+
+    Tailoring only reorders and highlights evidence that already exists: focus
+    terms must come from the portfolio-matched keywords of a job description,
+    so the résumé never gains a skill the portfolio does not document.
+    """
+    focus = list(dict.fromkeys(focus_terms or []))
     data = load_portfolio()
     personal = data["personal"]
     doc = ResumeDocument(name=personal["name"])
@@ -111,12 +135,18 @@ def build_resume() -> ResumeDocument:
 
     doc.add("heading", "Professional Summary")
     doc.add("text", SUMMARY)
+    if focus:
+        # Exact employer terms, each backed by portfolio evidence (ATS keyword match).
+        doc.add("labeled", ", ".join(focus[:14]), label="Core skills for this role")
+        doc.keywords.extend(focus)
 
     skills = data.get("skills", {})
     doc.add("heading", "Technical Skills")
-    for category, items in skills.items():
-        doc.add("labeled", ", ".join(items), label=category)
-        doc.keywords.extend(items[:4])
+    categories = _prioritise(list(skills.items()), focus, text=lambda pair: " ".join(pair[1]))
+    for category, items in categories:
+        ordered = _prioritise(items, focus)
+        doc.add("labeled", ", ".join(ordered), label=category)
+        doc.keywords.extend(ordered[:4])
 
     doc.add("heading", "Work Experience")
     for index, role in enumerate(data.get("work_experience", [])):
@@ -134,12 +164,26 @@ def build_resume() -> ResumeDocument:
             line = f"{project['name']}: {clip(project.get('description', ''), BULLET_CHARS - len(tech) - 10)}"
             bullets.append(f"{line} ({tech})" if tech else line)
         bullets.extend(clip(item) for item in role.get("additional_responsibilities", []))
-        for bullet in bullets[:limit]:
+        for bullet in _prioritise(bullets, focus)[:limit]:
             doc.add("bullet", bullet)
 
     doc.add("heading", "Projects")
     projects = data.get("projects", {})
-    for name in FEATURED_PROJECTS:
+    selected = list(FEATURED_PROJECTS)
+    if focus:
+        # Rank every project by job relevance; featured order breaks ties.
+        order = {name: index for index, name in enumerate(FEATURED_PROJECTS)}
+        # Research already listed under Publications is never repeated here.
+        published = {publication["title"].casefold() for publication in data.get("publications", [])}
+        candidates = sorted(
+            (name for name in projects if name.casefold() not in published or name in order),
+            key=lambda name: (
+                -_relevance(f"{projects[name].get('description', '')} {' '.join(projects[name].get('tech_stack', []))}", focus),
+                order.get(name, len(order)),
+            ),
+        )
+        selected = candidates[:len(FEATURED_PROJECTS)]
+    for name in selected:
         project = projects.get(name)
         if not project:
             continue

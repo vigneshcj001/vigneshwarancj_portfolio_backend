@@ -20,6 +20,7 @@ from typing import Any
 
 from app.ai.okf import retrieve_with_sources
 from app.content import load_portfolio
+from app.services.telemetry import Timer, record_llm_metric, record_text_volume
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,8 @@ COMMON_TERMS = [
 # Alternate spellings that should count as the same term.
 ALIASES = {
     "node.js": ("node", "nodejs"),
+    "react": ("react.js", "reactjs"),
+    "vue": ("vue.js", "vuejs"),
     "express.js": ("express", "expressjs"),
     "postgresql": ("postgres",),
     "kubernetes": ("k8s",),
@@ -246,12 +249,18 @@ async def ai_assessment(job_description: str, keywords: dict[str, Any]) -> tuple
         max_requirements=MAX_REQUIREMENTS, context=knowledge.context, job=job_description,
     )
     try:
-        message = await asyncio.wait_for(_model().ainvoke(prompt), timeout=ASSESSMENT_TIMEOUT_SECONDS)
+        with Timer("match.assess"):
+            message = await asyncio.wait_for(_model().ainvoke(prompt), timeout=ASSESSMENT_TIMEOUT_SECONDS)
     except Exception:
         logger.warning("Job match assessment failed", exc_info=True)
+        record_llm_metric("match.model_failed")
         return None, list(knowledge.sources)
     content = getattr(message, "content", "")
-    return _parse_assessment(content if isinstance(content, str) else ""), list(knowledge.sources)
+    text = content if isinstance(content, str) else ""
+    record_text_volume("match", len(prompt), len(text))
+    parsed = _parse_assessment(text)
+    record_llm_metric("match.assessed" if parsed else "match.invalid_output")
+    return parsed, list(knowledge.sources)
 
 
 async def analyze_job(job_description: str, use_ai: bool = True) -> dict[str, Any]:

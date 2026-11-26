@@ -2,12 +2,15 @@ import asyncio
 import hashlib
 import json
 import logging
+import time
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response, StreamingResponse
 
 from app.ai.chain import assistant_chain, build_history
 from app.ai.okf import knowledge_version
+from app.ai.output_guard import guard_identifiers
+from app.services.telemetry import record_latency, record_llm_metric, record_text_volume
 from app.agent.graph import AgentTurn, run_agent_turn, stream_agent_turn
 from app.agent.memory import delete_memory, load_memory, save_memory
 from app.config import ANSWER_CACHE_DAYS
@@ -23,6 +26,22 @@ router = APIRouter()
 LLM_TIMEOUT_SECONDS = 30
 BUSY_MESSAGE = "The assistant is busy right now — please try again in a minute."
 _response_cache: dict[tuple[str, str], dict] = {}
+
+
+def _record_generation(started: float, turn: AgentTurn, question: str, answer: str) -> None:
+    record_latency("assistant.generate", (time.perf_counter() - started) * 1000)
+    record_llm_metric("assistant.answered")
+    record_text_volume("assistant", len(turn.knowledge_context) + len(question), len(answer))
+
+
+def _finalize(raw: str, turn: AgentTurn) -> str:
+    """Clean formatting, then drop links/contacts the sources never mentioned."""
+    result = guard_identifiers(clean_output(raw), turn.knowledge_context)
+    if result.removed:
+        # Count only: the removed values may be hallucinated and are not logged.
+        logger.warning("Output guard removed %d ungrounded identifier(s)", len(result.removed))
+        record_llm_metric("guard_removed", len(result.removed))
+    return result.text
 
 
 def _normalize_question(message: str) -> str:
@@ -138,16 +157,19 @@ async def assistant_endpoint(request: Request, payload: AssistantRequest):
         key = _cache_key(payload, raw_history)
         cached = await _cached(key)
         if cached:
+            record_llm_metric("assistant.cache_hit")
             await _persist(payload, raw_history, cached["reply"])
             return AssistantResponse(**{**cached, "session_id": payload.session_id})
         turn = await run_agent_turn(payload.message, raw_history, payload.language, payload.session_id)
         metadata = _metadata(turn, payload.session_id)
         if turn.direct_reply:
+            record_llm_metric("assistant.refused")
             response = {"reply": turn.direct_reply, **metadata}
             await _persist(payload, raw_history, turn.direct_reply)
             await _remember(key, response)
             return AssistantResponse(**response)
         chat_history = build_history(history_items)
+        started = time.perf_counter()
         raw_reply = await asyncio.wait_for(
             assistant_chain.ainvoke(
                 {
@@ -160,17 +182,21 @@ async def assistant_endpoint(request: Request, payload: AssistantRequest):
             ),
             timeout=LLM_TIMEOUT_SECONDS,
         )
-        reply = clean_output(raw_reply)
+        _record_generation(started, turn, payload.message, raw_reply)
+        reply = _finalize(raw_reply, turn)
         response = {"reply": reply, **metadata}
         await _persist(payload, raw_history, reply)
         await _remember(key, response)
         return AssistantResponse(**response)
 
     except asyncio.TimeoutError as exc:
-        logger.warning("LLM timeout after %ss for message: %.60r", LLM_TIMEOUT_SECONDS, payload.message)
+        # Never log visitor questions: they can contain personal details.
+        logger.warning("LLM timeout after %ss", LLM_TIMEOUT_SECONDS)
+        record_llm_metric("assistant.timeout")
         raise HTTPException(status_code=504, detail="Response timed out — please try again.") from exc
 
     except Exception as exc:
+        record_llm_metric("assistant.error")
         if _is_capacity_error(exc):
             logger.warning("LLM capacity error: %s", exc)
             raise HTTPException(status_code=503, detail=BUSY_MESSAGE) from exc
@@ -191,6 +217,7 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
             key = _cache_key(payload, raw_history)
             cached = await _cached(key)
             if cached:
+                record_llm_metric("assistant.cache_hit")
                 metadata = {name: cached.get(name, default) for name, default in (
                     ("sources", []), ("followups", []), ("project", None),
                     ("actions", []), ("tools", []),
@@ -213,6 +240,7 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
             for action in turn.actions:
                 yield f"data: {json.dumps({'type': 'ui_action', 'action': action.model_dump()})}\n\n"
             if turn.direct_reply:
+                record_llm_metric("assistant.refused")
                 response = {"reply": turn.direct_reply, **metadata}
                 await _persist(payload, raw_history, turn.direct_reply)
                 await _remember(key, response)
@@ -220,6 +248,7 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
                 return
             chat_history = build_history(history_items)
             yield f"data: {json.dumps({'type': 'status', 'phase': 'answering', 'message': answer_status(payload.message, turn.project)})}\n\n"
+            started = time.perf_counter()
             async with asyncio.timeout(LLM_TIMEOUT_SECONDS):
                 async for chunk in assistant_chain.astream(
                     {
@@ -236,18 +265,22 @@ async def assistant_stream(request: Request, payload: AssistantRequest):
                         accumulated += chunk
                         yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
 
+            _record_generation(started, turn, payload.message, accumulated)
             # Send sanitized full text on done so frontend can replace
-            cleaned = clean_output(accumulated)
+            cleaned = _finalize(accumulated, turn)
             response = {"reply": cleaned, **metadata}
             await _persist(payload, raw_history, cleaned)
             await _remember(key, response)
             yield f"data: {json.dumps({'type': 'done', 'done': True, 'full': cleaned, **metadata})}\n\n"
 
         except TimeoutError:
-            logger.warning("Stream timeout for message: %.60r", payload.message)
+            # Never log visitor questions: they can contain personal details.
+            logger.warning("Stream timeout after %ss", LLM_TIMEOUT_SECONDS)
+            record_llm_metric("assistant.timeout")
             yield f"data: {json.dumps({'error': 'Response timed out — please try again.'})}\n\n"
 
         except Exception as exc:
+            record_llm_metric("assistant.error")
             logger.exception("Streaming error: %s", exc)
             yield f"data: {json.dumps({'error': 'Failed to generate response.'})}\n\n"
 
