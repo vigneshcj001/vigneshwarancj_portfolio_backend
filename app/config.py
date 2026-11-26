@@ -51,6 +51,12 @@ ANSWER_TEMPERATURE: float = min(1.0, max(0.0, float(os.getenv("ANSWER_TEMPERATUR
 # Days to keep chat sessions and cached answers in PostgreSQL before purging.
 SESSION_RETENTION_DAYS: int = max(1, int(os.getenv("SESSION_RETENTION_DAYS", "30") or 30))
 ANSWER_CACHE_DAYS: int = max(1, int(os.getenv("ANSWER_CACHE_DAYS", "7") or 7))
+# Optional newsletter delivery via Resend; all three are required to send.
+RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "")
+NEWSLETTER_FROM: str = os.getenv("NEWSLETTER_FROM", "")  # e.g. "CJ <notes@yourdomain.com>"
+UNSUBSCRIBE_SECRET: str = os.getenv("UNSUBSCRIBE_SECRET", "")
+# Public origin of this API, used in unsubscribe links.
+PUBLIC_API_URL: str = os.getenv("PUBLIC_API_URL", "https://vigneshwarancj-portfolio-backend.onrender.com").rstrip("/")
 GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
 APP_VERSION: str = os.getenv("APP_VERSION", os.getenv("RENDER_GIT_COMMIT", "dev"))[:12]
 

@@ -8,11 +8,15 @@ import zipfile
 from datetime import datetime, timezone
 from xml.sax.saxutils import escape
 
+from typing import Literal
+
 from fastapi import APIRouter, Request
 from fastapi.responses import PlainTextResponse, Response
 from fpdf import FPDF
+from pydantic import BaseModel, Field
 
 from app.limiter import limiter
+from app.services.match import keyword_analysis
 from app.services.resume_document import ResumeDocument, build_resume, render_text
 
 router = APIRouter()
@@ -249,6 +253,42 @@ async def resume_docx(request: Request) -> Response:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "docx",
     )
+
+
+class TailoredResumeRequest(BaseModel):
+    job_description: str = Field(min_length=80, max_length=8000)
+    format: Literal["pdf", "docx", "txt"] = "pdf"
+
+
+@router.post("/api/resume/tailored")
+@limiter.limit("10/minute")
+async def resume_tailored(request: Request, payload: TailoredResumeRequest) -> Response:
+    """Résumé reordered for one job description.
+
+    Only technologies that appear in the job description *and* have portfolio
+    evidence are emphasised (see app/services/match.keyword_analysis), so the
+    document never claims a skill the portfolio does not show. The description
+    itself is not stored.
+    """
+    matched = [item["term"] for item in keyword_analysis(payload.job_description)["matched"]]
+    document = build_resume(matched)
+    stem = "Vigneshwaran_CJ_Resume_tailored"
+    if payload.format == "txt":
+        return PlainTextResponse(render_text(document), headers={
+            "Cache-Control": "no-store",
+            "Content-Disposition": f'attachment; filename="{stem}.txt"',
+            "X-Matched-Terms": str(len(matched)),
+        })
+    content, media = (
+        (render_docx(document), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        if payload.format == "docx" else (render_pdf(document), "application/pdf")
+    )
+    return Response(content=content, media_type=media, headers={
+        "Content-Disposition": f'attachment; filename="{stem}.{payload.format}"',
+        "Cache-Control": "no-store",
+        "Access-Control-Expose-Headers": "Content-Disposition, X-Matched-Terms",
+        "X-Matched-Terms": str(len(matched)),
+    })
 
 
 @router.get("/api/resume.txt", response_class=PlainTextResponse)

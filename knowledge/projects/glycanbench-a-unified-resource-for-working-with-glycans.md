@@ -10,7 +10,34 @@ data:
     conformers, format conversion, molecular descriptors, fingerprint comparison, GLYSUM Needleman-Wunsch alignment, clustering,
     immunogenicity prediction, and literature-aware chat. The PyTorch Geometric MPNN uses 1,344 curated glycans after correcting
     12 contradictory labels across two datasets. GlycomicsChat routes Groq/LangChain requests to PubMed, ArXiv, and GlyTouCan.
-    Distributed as web app, SDK, CLI, and FastAPI server with tests and notebooks.
+    Distributed as web app, SDK, CLI, and FastAPI server with tests and notebooks. The deduplicated training set is balanced
+    (672 immunogenic, 672 non-immunogenic) with a stratified 80/20 split. On the evaluation set reported in the submitted
+    paper (633 glycans, 179 immunogenic), the MPNN reaches AUC-ROC 0.983, MCC 0.899, accuracy 0.959 and F1 0.927. GAT, GIN
+    and LSTM baselines were trained for comparison.
+  evaluation:
+    model: MPNN immunogenicity classifier (PyTorch Geometric), compared with GAT, GIN and LSTM baselines
+    training_data: 1,344 unique glycans after resolving 12 contradictory labels (672 positive, 672 negative); stratified 80/20 split
+    reported_evaluation_set: 633 glycans (179 immunogenic, 454 non-immunogenic), as reported in the submitted paper's Table 1
+    auc_roc: '0.983'
+    auc_pr: '0.952'
+    mcc: '0.899'
+    accuracy: '0.959'
+    balanced_accuracy: '0.949'
+    f1_immunogenic: '0.927'
+    confusion_matrix: TN 441, FP 13, FN 13, TP 166
+  novel_contributions:
+  - 'First web aligner using the GLYSUM glycan substitution matrix (Needleman-Wunsch with fuzzy token resolution); earlier
+    web alignment (SweetAlign, 2006) used simple match/mismatch scoring'
+  - 'On-demand 3D conformers for any IUPAC glycan (ETKDGv3, then MMFF94s, with a UFF fallback); GLYCAM-Web offers higher-quality
+    force fields but only for a pre-built library'
+  - 'Public web immunogenicity predictor (MPNN with AlphaGal, Neu5Gc and complex N-glycan rule flags); GlyNet and glycowork
+    classifiers are programmatic only'
+  - 'Interactive motif mutation tool with pentamer glycoword frequencies; no published interactive equivalent was found'
+  - 'One request returns IUPAC, SMILES, GlycoCT and WURCS, with unsupported conversions reported explicitly'
+  - 'Multi-fingerprint comparison (Morgan R2/R3, Atom Pair, Torsion, RDKit) and clustering with runtime-selectable metrics,
+    including glycowork graph similarity'
+  - 'GlycomicsChat: glycomics-restricted assistant whose LLM router selects PubMed, ArXiv or GlyTouCan per question, with
+    a keyword fallback'
   tech_stack:
   - Python
   - FastAPI
@@ -60,3 +87,7 @@ data:
 # GlycanBench: a unified resource for working with glycans
 
 Full-stack glycoinformatics platform and installable Python package built with Ashok Palaniappan at SASTRA's Systems Computational Biology Lab. React 19 and FastAPI expose 20 tools for glycan creation, SNFG 2D and on-demand 3D conformers, format conversion, molecular descriptors, fingerprint comparison, GLYSUM Needleman-Wunsch alignment, clustering, immunogenicity prediction, and literature-aware chat. The PyTorch Geometric MPNN uses 1,344 curated glycans after correcting 12 contradictory labels across two datasets. GlycomicsChat routes Groq/LangChain requests to PubMed, ArXiv, and GlyTouCan. Distributed as web app, SDK, CLI, and FastAPI server with tests and notebooks.
+
+On the evaluation set reported in the submitted paper (633 glycans, 179 immunogenic), the MPNN immunogenicity classifier reaches AUC-ROC 0.983, MCC 0.899, accuracy 0.959 and F1 0.927, compared against GAT, GIN and LSTM baselines.
+
+Compared with existing tools, GlycanBench adds the first web aligner using the GLYSUM substitution matrix, on-demand 3D conformers for any IUPAC glycan rather than a pre-built library, a public web immunogenicity predictor, an interactive motif mutation tool, single-request conversion across four glycan formats, and a glycomics-restricted chat assistant that routes questions to PubMed, ArXiv, or GlyTouCan.

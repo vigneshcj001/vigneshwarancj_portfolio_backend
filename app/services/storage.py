@@ -4,6 +4,8 @@ from typing import Any
 
 from app.config import ANSWER_CACHE_DAYS, DATABASE_URL, SESSION_RETENTION_DAYS
 
+SHARE_RETENTION_DAYS = 30
+
 try:
     import asyncpg
 except ImportError:  # Local static validation can run before dependencies install.
@@ -49,6 +51,16 @@ async def init_storage() -> None:
             );
             CREATE INDEX IF NOT EXISTS portfolio_events_created_idx
               ON portfolio_events (created_at, name);
+            CREATE TABLE IF NOT EXISTS portfolio_match_shares (
+              share_id TEXT PRIMARY KEY, result JSONB NOT NULL,
+              created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+            CREATE TABLE IF NOT EXISTS portfolio_testimonials (
+              id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL, role TEXT NOT NULL,
+              relationship TEXT NOT NULL, quote TEXT NOT NULL,
+              status TEXT NOT NULL DEFAULT 'pending',
+              created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), reviewed_at TIMESTAMPTZ
+            );
         """)
     await purge_expired()
 
@@ -69,8 +81,85 @@ async def purge_expired() -> dict[str, int]:
         "DELETE FROM portfolio_answer_cache WHERE created_at < NOW() - make_interval(days => $1)",
         ANSWER_CACHE_DAYS,
     )
+    shares = await _pool.execute(
+        "DELETE FROM portfolio_match_shares WHERE created_at < NOW() - make_interval(days => $1)",
+        SHARE_RETENTION_DAYS,
+    )
+    errors = await _pool.execute(
+        "DELETE FROM portfolio_events WHERE name = 'client_error' AND created_at < NOW() - INTERVAL '30 days'",
+    )
     # asyncpg returns command tags such as "DELETE 3".
-    return {"sessions": int(sessions.split()[-1]), "answers": int(answers.split()[-1])}
+    count = lambda tag: int(tag.split()[-1])  # noqa: E731
+    return {"sessions": count(sessions), "answers": count(answers), "shares": count(shares), "client_errors": count(errors)}
+
+
+# ── Job-match share links ────────────────────────────────────────────────────
+async def save_match_share(share_id: str, result: dict[str, Any]) -> None:
+    await _require_pool().execute(
+        "INSERT INTO portfolio_match_shares(share_id,result) VALUES($1,$2::jsonb)",
+        share_id, json.dumps(result),
+    )
+
+
+async def load_match_share(share_id: str) -> dict[str, Any] | None:
+    value = await _require_pool().fetchval(
+        "SELECT result FROM portfolio_match_shares WHERE share_id=$1 "
+        "AND created_at >= NOW() - make_interval(days => $2)",
+        share_id, SHARE_RETENTION_DAYS,
+    )
+    if isinstance(value, str):
+        value = json.loads(value)
+    return value if isinstance(value, dict) else None
+
+
+# ── Testimonials (moderated) ─────────────────────────────────────────────────
+async def save_testimonial(name: str, role: str, relationship: str, quote: str) -> int:
+    return await _require_pool().fetchval(
+        "INSERT INTO portfolio_testimonials(name,role,relationship,quote) VALUES($1,$2,$3,$4) RETURNING id",
+        name, role, relationship, quote,
+    )
+
+
+async def list_testimonials(status: str | None = None) -> list[dict[str, Any]]:
+    query = "SELECT id,name,role,relationship,quote,status,created_at FROM portfolio_testimonials"
+    rows = (
+        await _require_pool().fetch(query + " WHERE status=$1 ORDER BY created_at DESC LIMIT 100", status)
+        if status else await _require_pool().fetch(query + " ORDER BY created_at DESC LIMIT 100")
+    )
+    return [dict(row) for row in rows]
+
+
+async def set_testimonial_status(testimonial_id: int, status: str) -> bool:
+    tag = await _require_pool().execute(
+        "UPDATE portfolio_testimonials SET status=$2, reviewed_at=NOW() WHERE id=$1",
+        testimonial_id, status,
+    )
+    return tag.endswith(" 1")
+
+
+# ── Newsletter recipients and client errors ──────────────────────────────────
+async def list_subscribers() -> list[str]:
+    rows = await _require_pool().fetch("SELECT email FROM portfolio_subscribers ORDER BY created_at")
+    return [row["email"] for row in rows]
+
+
+async def delete_subscriber(email: str) -> None:
+    await _require_pool().execute("DELETE FROM portfolio_subscribers WHERE email=$1", email.lower())
+
+
+async def recent_client_errors(limit: int = 50) -> list[dict[str, Any]]:
+    rows = await _require_pool().fetch(
+        "SELECT path, properties, created_at FROM portfolio_events WHERE name='client_error' "
+        "ORDER BY created_at DESC LIMIT $1",
+        limit,
+    )
+    result = []
+    for row in rows:
+        properties = row["properties"]
+        if isinstance(properties, str):
+            properties = json.loads(properties)
+        result.append({"path": row["path"], "created_at": row["created_at"], **(properties or {})})
+    return result
 
 
 async def close_storage() -> None:

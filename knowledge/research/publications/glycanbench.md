@@ -13,7 +13,8 @@ data:
   type: Research Paper
   context: PG M.Tech · Main Project
   abstract: Unified glycoinformatics web server and Python package with 20 tools. Includes an MPNN trained on 1,344 curated
-    glycans after correcting 12 contradictory labels, on-demand conformers, GLYSUM alignment, network visualisation, and GlycomicsChat.
+    glycans after correcting 12 contradictory labels (AUC-ROC 0.983 and MCC 0.899 on the paper's 633-glycan evaluation set),
+    on-demand conformers, GLYSUM alignment, network visualisation, and GlycomicsChat.
   tags:
   - Glycomics
   - MPNN

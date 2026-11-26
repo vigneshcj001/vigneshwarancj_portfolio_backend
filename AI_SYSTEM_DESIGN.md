@@ -1,6 +1,6 @@
 # AI system design review
 
-Reviewed 12 November 2026 against a standard AI system design rubric: requirements, data, retrieval, models, agent control, guardrails, grounding, evaluation, observability, latency, reliability, cost, security and privacy, human oversight, scale, and change management. Each area cites the code that implements it and gives an honest rating.
+Reviewed 12 November 2026, updated 27 November 2026, against a standard AI system design rubric: requirements, data, retrieval, models, agent control, guardrails, grounding, evaluation, observability, latency, reliability, cost, security and privacy, human oversight, scale, and change management. Each area cites the code that implements it and gives an honest rating.
 
 **Ratings:** ✅ Meets — ◐ Partial — ✗ Gap
 
@@ -16,10 +16,10 @@ Detailed request flow and protocol: [ASSISTANT_ARCHITECTURE.md](ASSISTANT_ARCHIT
 | 4 | Retrieval | ◐ | Measured recall@4 0.958, but lexical only: everyday paraphrases can still miss. |
 | 5 | Model choice and prompting | ◐ | One pinned, configurable model; answer temperature 0.65 is high for factual answers. |
 | 6 | Agent and tool control | ✅ | Rule-based planner, typed tools, four-call budget, double allowlist for UI actions. |
-| 7 | Guardrails and prompt injection | ◐ | Layered input checks and delimited untrusted text; no output-side policy check. |
+| 7 | Guardrails and prompt injection | ✅ | Layered input checks, delimited untrusted text, and an output guard that removes ungrounded links and contact details. |
 | 8 | Grounding and hallucination control | ◐ | Citations and grounding prompt; no automated faithfulness check on answers. |
-| 9 | Evaluation | ◐ | Retrieval eval and behaviour tests gate CI; no answer-quality eval set yet. |
-| 10 | Observability | ◐ | Request IDs, access logs, opt-in LangSmith traces, feedback events; no token or cost metrics. |
+| 9 | Evaluation | ◐ | Retrieval eval gates CI; a 29-case answer-quality eval with a faithfulness judge exists but has no baseline run yet. |
+| 10 | Observability | ✅ | Request IDs, access logs, AI metrics (latency percentiles, cache, refusals, guard removals, estimated tokens), client error reports. |
 | 11 | Latency and UX | ✅ | Streaming tokens and progress events, timeouts, warm-up ping, stop/retry. |
 | 12 | Reliability and fallbacks | ✅ | Every external dependency has a defined degraded mode. |
 | 13 | Cost control | ✅ | Refusals skip the model, answer cache, bounded context and output, per-visitor rate limits. |
@@ -27,7 +27,9 @@ Detailed request flow and protocol: [ASSISTANT_ARCHITECTURE.md](ASSISTANT_ARCHIT
 | 15 | Human oversight | ✅ | Consequential actions are prepared, never executed; the visitor confirms. |
 | 16 | Scale, deployment, and change management | ◐ | Fine for one instance; limits and memory fallback are per process. |
 
-**Overall:** the design satisfies the core requirements for a production retrieval-grounded assistant: bounded agency, grounding with citations, layered guardrails, defined fallbacks, cost controls, and privacy by default. The open items are measurement gaps (answer-quality evaluation, token and cost telemetry) and two quality levers (semantic retrieval, lower answer temperature), all listed in [Recommended next steps](#recommended-next-steps).
+**Overall:** the design satisfies the core requirements for a production retrieval-grounded assistant: bounded agency, grounding with citations, layered input and output guardrails, defined fallbacks, cost controls, observability, and privacy by default. The main open item is a first baseline run of the answer-quality eval, which unlocks lowering the answer temperature; semantic retrieval and multi-worker rate limits follow. See [Recommended next steps](#recommended-next-steps).
+
+**Since the first review (27 November):** output guard (area 7), AI metrics and client error reports (area 10), answer-quality eval harness with a weekly workflow (area 9), and a privacy fix: timeout handlers no longer log the first 60 characters of the visitor's question (area 14).
 
 ## AI features in scope
 
@@ -73,14 +75,14 @@ Success criteria are implicit rather than written: correct facts, cited sources,
 
 Implementation: token-overlap ranking with title and path weighting, topic hints, up to four sources, a 12,000-character context budget (`app/ai/okf.py`). A small query-expansion vocabulary maps everyday phrasing to résumé terms ("now" → "present").
 
-Measured with `python -m evals.retrieval_eval` on 24 labelled questions:
+Measured with `python -m evals.retrieval_eval`. The first column is the original 24 questions before query expansion; the second is the current 29 (adding Kural, CMO Copilot, and GlycanBench metrics questions):
 
-| Metric | Before expansion | Now |
+| Metric | Before expansion (24) | Now (29) |
 |---|:-:|:-:|
-| Recall@4, all | 0.917 | **0.958** |
+| Recall@4, all | 0.917 | **0.966** |
 | Recall@4, direct questions | 1.000 | **1.000** |
-| Recall@4, paraphrased questions | 0.714 | **0.857** |
-| MRR | 0.781 | **0.833** |
+| Recall@4, paraphrased questions | 0.714 | **0.875** |
+| MRR | 0.781 | **0.819** |
 
 `tests/test_retrieval_eval.py` fails CI if direct-question recall drops below 100% or overall recall below 0.9.
 
@@ -102,7 +104,7 @@ Measured with `python -m evals.retrieval_eval` on 24 labelled questions:
 - UI actions are restricted to known types and targets on the server (`app/agent/protocol.py`), and again on the client (`src/features/assistant/actions.js`). No generated URL, selector, or code ever runs.
 - Only navigation and highlighting run automatically. Tours and contact drafts need a click, and restored conversations never replay actions.
 
-## 7. Guardrails and prompt injection — ◐
+## 7. Guardrails and prompt injection — ✅
 
 | Layer | Control | Where |
 |---|---|---|
@@ -110,13 +112,13 @@ Measured with `python -m evals.retrieval_eval` on 24 labelled questions:
 | Input intent | Regex checks for prompt-extraction phrasing, then Laya classification | `app/ai/laya.py` |
 | Indirect injection | Knowledge is owner-committed, so it is trusted. Job descriptions are wrapped in `<job>` tags and labelled as data. | `app/services/match.py` |
 | Output format | Markdown stripped from answers; job-match JSON validated against a schema, with unknown statuses dropped | `app/ai/sanitizer.py`, `match._parse_assessment` |
+| Output identifiers | URLs, emails, and phone numbers that appear in neither the retrieved context nor the owner's published contacts are replaced with "the contact page"; removals are counted, not logged | `app/ai/output_guard.py` |
 | Output rendering | React escapes all model text, and no HTML is injected | frontend |
 | Actions | Server and client allowlists (area 6) | — |
 
-**Gaps:**
-- The regex layer is easy to evade by rephrasing. Without a Laya key, unrelated questions are not classified at all; only the system prompt restrains the answer.
-- There is no output-side check, for example that an answer contains no contact details absent from the knowledge base.
-- Tokens are shown as they stream, before final sanitization. That is acceptable for formatting, and the clean text replaces the stream on `done`.
+**Remaining caveats:**
+- The regex layer is easy to evade by rephrasing. Without a Laya key, unrelated questions are not classified at all; only the system prompt restrains the answer. Keep `LAYA_API_KEY` set in production.
+- Tokens are shown as they stream, before the output guard runs. The guarded text replaces the stream on `done`, so a removed link can flash briefly during streaming.
 
 ## 8. Grounding and hallucination control — ◐
 
@@ -124,30 +126,34 @@ Measured with `python -m evals.retrieval_eval` on 24 labelled questions:
 - Every answer returns its sources as citations linking to public pages, so readers can verify claims.
 - Job match grounds each requirement in named evidence and lists gaps explicitly, rather than implying a perfect fit.
 
-**Gap:** grounding is enforced by the prompt, not checked. Nothing verifies that each claim in an answer appears in the retrieved context.
+**Gap:** at runtime, grounding is enforced by the prompt and by the identifier guard (area 7), not by claim-level checking. Faithfulness can now be measured offline with `python -m evals.answer_eval --judge` (area 9), but it is not verified per answer in production.
 
 ## 9. Evaluation — ◐
 
 | Level | What exists | Runs in CI |
 |---|---|:-:|
-| Retrieval quality | 24-case recall and MRR eval with a regression gate | ✅ |
+| Retrieval quality | 29-case recall and MRR eval with a regression gate | ✅ |
 | Routing and planning | Unit tests for topics, prompt attacks, project follow-ups, tool selection | ✅ |
 | Contracts | Schema limits, history budgets, SSE metadata, cache keys, action validation | ✅ |
 | Job match | Keyword precision traps ("R&D" ≠ R, "go the extra mile" ≠ Go), parser rejects malformed output, fallback path | ✅ |
-| UI behaviour | Browser suites with mocked providers: actions, receipts, stop/retry, saved chats | ✅ (frontend) |
+| UI behaviour | Four browser suites with mocked providers: actions, receipts, stop/retry, saved chats, job match, sharing, compare, status | ✅ (frontend) |
+| Output guard, telemetry, tailoring | Unit tests: identifier removal and false-positive traps, metric rates, tailored résumé never adds skills | ✅ |
 | Online feedback | Thumbs up/down on answers, recorded as first-party events | — |
-| **Answer quality** | **None**: no golden answers judged for correctness, faithfulness, or refusals | ✗ |
+| Answer quality | `evals/answer_cases.json`: 24 fact cases and 5 must-refuse cases; fact pass rate, refusal accuracy, forbidden content, optional model-judged faithfulness, thresholds | Weekly / on demand |
+| End to end | Real API with no mocks: health, résumé, job match, one live grounded answer | Nightly |
 
-The missing piece is an answer-level eval: about 30 questions with expected facts and must-refuse cases, scored for faithfulness to the retrieved context. It needs live model calls, so it costs credits and belongs in a manual or nightly job rather than every CI run.
+The answer-quality and end-to-end workflows need the `GROQ_API_KEY` repository secret (and `LAYA_API_KEY` for refusal cases to match production). They skip with a notice until it is set. **No baseline has been recorded yet**; the first run sets it.
 
-## 10. Observability — ◐
+## 10. Observability — ✅
 
 - An `X-Request-ID` header on every response, and a matching access-log line with method, path, status, and latency. Bodies, query strings, and IPs are not logged.
-- `/api/health` reports database reachability, uptime, and version.
+- `/api/health` reports database reachability, uptime, and version; the public `/status` page shows it.
+- `/api/admin/metrics` (`app/services/telemetry.py`): generation latency p50/p95/max, answers, cache hit rate, refusal rate, timeouts and errors, output-guard removals, job-match assessment latency and fallbacks, and estimated token volume. No content is recorded.
+- First-party client error reports (`/api/client-errors`), kept 30 days, shown in the admin page.
 - LangSmith traces with named runs, opt-in via `LANGCHAIN_API_KEY`.
 - Answer feedback and the conversion funnel (`/api/admin/funnel`).
 
-**Gap:** no per-request token counts, model latency, cache hit rate, or refusal rate. These are the numbers that show cost drift or a quality regression after a prompt change.
+**Caveats:** metrics are per process and reset on restart. Token counts are estimated from text length because the streamed LangChain chain does not surface provider usage; exact billing figures come from the Groq console.
 
 ## 11. Latency and UX — ✅
 
@@ -197,9 +203,10 @@ The system can propose but never commit. Contact actions prefill a draft that th
 
 In order of value for effort:
 
-1. **Answer-quality eval (area 9).** About 30 golden questions with expected facts and must-refuse cases. Score faithfulness with an LLM judge against the retrieved context and run it nightly or before releases. This unlocks item 2 safely.
-2. **Lower `ANSWER_TEMPERATURE` to 0.3 (area 5)** once the eval confirms tone and accuracy hold.
-3. **Token and latency metrics (area 10).** Log `usage_metadata` per call with the request ID; track cache hit and refusal rates.
-4. **Semantic retrieval (area 4)** if paraphrase recall needs to pass 0.95: add embeddings alongside lexical scores (hybrid), keeping the eval as the gate.
-5. **Output policy check (area 7).** Reject answers containing URLs, emails, or phone numbers absent from the retrieved context.
-6. **Redis-backed rate limits (area 16)** before running more than one worker.
+1. **Record the answer-quality baseline (area 9).** Add the `GROQ_API_KEY` (and `LAYA_API_KEY`) repository secrets, run the "Answer quality" workflow with the judge, and fix any failing cases or stale facts.
+2. **Lower `ANSWER_TEMPERATURE` to 0.3 (area 5)** and re-run the eval to confirm tone and accuracy hold.
+3. **Semantic retrieval (area 4)** if paraphrase recall needs to pass 0.95: add embeddings alongside lexical scores (hybrid), keeping the retrieval eval as the gate.
+4. **Exact token usage (area 10)** by reading provider usage metadata instead of estimating from text length.
+5. **Redis-backed rate limits and metrics (area 16)** before running more than one worker.
+
+Done since the first review: output policy check (area 7), latency, cache and refusal metrics (area 10), and the answer-quality harness (area 9).
