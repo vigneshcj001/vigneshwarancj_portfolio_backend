@@ -1,29 +1,108 @@
 import asyncio
 import json
+import logging
+import time
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from app.config import ANSWER_CACHE_DAYS, DATABASE_URL, SESSION_RETENTION_DAYS
 
 SHARE_RETENTION_DAYS = 30
+CONNECT_TIMEOUT_SECONDS = 10
+RECONNECT_INTERVAL_SECONDS = 60
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "postgres", "db", "host.docker.internal"}
+# Every table the app creates. Row Level Security is enabled on all of them so
+# hosted Postgres with a public data API (Supabase PostgREST) exposes nothing;
+# the app connects as the table owner, which RLS does not restrict.
+TABLES = (
+    "portfolio_content_revisions", "portfolio_events", "portfolio_contacts", "portfolio_subscribers",
+    "portfolio_agent_sessions", "portfolio_answer_cache", "portfolio_match_shares", "portfolio_testimonials",
+)
 
 try:
     import asyncpg
 except ImportError:  # Local static validation can run before dependencies install.
     asyncpg = None
 
+logger = logging.getLogger(__name__)
 _pool = None
+_last_attempt = 0.0
+_last_error = ""
 
 
 class StorageUnavailable(RuntimeError):
     pass
 
 
+def connection_options(dsn: str) -> tuple[str, dict[str, Any]]:
+    """Normalise a Postgres URL for asyncpg, including Supabase's pooler.
+
+    - Supabase's transaction pooler (port 6543, or `pgbouncer=true`) does not
+      keep prepared statements between transactions, so asyncpg's statement
+      cache must be off. The session pooler (port 5432) needs no change.
+    - `pgbouncer=true` is a Prisma-style flag asyncpg would reject; it is removed.
+    - Remote hosts get TLS unless the URL already sets `sslmode`.
+    """
+    parts = urlsplit(dsn)
+    params = parse_qsl(parts.query, keep_blank_values=True)
+    pgbouncer = any(key == "pgbouncer" and value.lower() in {"1", "true"} for key, value in params)
+    params = [(key, value) for key, value in params if key != "pgbouncer"]
+    options: dict[str, Any] = {}
+    if pgbouncer or parts.port == 6543:
+        options["statement_cache_size"] = 0
+    host = (parts.hostname or "").lower()
+    if host and host not in LOCAL_HOSTS and "sslmode" not in {key for key, _ in params}:
+        options["ssl"] = "require"
+    cleaned = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(params), parts.fragment))
+    return cleaned, options
+
+
+def storage_status() -> str:
+    """"not_configured", "connected", or "unreachable" (configured but no pool)."""
+    if not DATABASE_URL:
+        return "not_configured"
+    return "connected" if _pool is not None else "unreachable"
+
+
 async def init_storage() -> None:
-    global _pool
-    if not DATABASE_URL or asyncpg is None:
+    """Connect and create tables. A database outage never stops the API starting.
+
+    Free hosted databases (for example Supabase's free plan) can be paused or
+    briefly unreachable; the assistant and public pages still work without
+    storage, and `ensure_storage()` retries later.
+    """
+    global _pool, _last_attempt, _last_error
+    if not DATABASE_URL or asyncpg is None or _pool is not None:
         return
-    _pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=3, command_timeout=10)
-    async with _pool.acquire() as connection:
+    _last_attempt = time.monotonic()
+    dsn, options = connection_options(DATABASE_URL)
+    try:
+        pool = await asyncpg.create_pool(
+            dsn, min_size=1, max_size=3, command_timeout=10, timeout=CONNECT_TIMEOUT_SECONDS, **options,
+        )
+    except Exception as exc:  # network, auth, paused project: report, don't crash
+        _last_error = type(exc).__name__
+        # Never log the URL: it contains the database password.
+        logger.warning("Database unavailable (%s); continuing without storage", _last_error)
+        return
+    try:
+        await _create_schema(pool)
+    except Exception:
+        await pool.close()
+        raise
+    _pool = pool
+    _last_error = ""
+    await purge_expired()
+
+
+async def ensure_storage() -> None:
+    """Retry a failed connection, at most once per RECONNECT_INTERVAL_SECONDS."""
+    if _pool is None and DATABASE_URL and time.monotonic() - _last_attempt >= RECONNECT_INTERVAL_SECONDS:
+        await init_storage()
+
+
+async def _create_schema(pool) -> None:
+    async with pool.acquire() as connection:
         await connection.execute("""
             CREATE TABLE IF NOT EXISTS portfolio_content_revisions (
               id BIGSERIAL PRIMARY KEY, content JSONB NOT NULL, note TEXT NOT NULL,
@@ -62,7 +141,9 @@ async def init_storage() -> None:
               created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), reviewed_at TIMESTAMPTZ
             );
         """)
-    await purge_expired()
+        # Deny Supabase's public REST/GraphQL API (anon and authenticated roles):
+        # with RLS on and no policies, only the owning role can read or write.
+        await connection.execute(";".join(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY" for table in TABLES))
 
 
 async def purge_expired() -> dict[str, int]:
@@ -174,9 +255,14 @@ def connected() -> bool:
 
 
 async def ping(timeout: float = 2.0) -> str:
-    """Return "connected", "not_configured", or "unreachable" for health checks."""
+    """Return "connected", "not_configured", or "unreachable" for health checks.
+
+    Also the reconnect hook: the frontend probes /api/health on every visit, so a
+    database that was down at startup is picked up again without a restart.
+    """
+    await ensure_storage()
     if _pool is None:
-        return "not_configured"
+        return storage_status()
     try:
         await asyncio.wait_for(_pool.fetchval("SELECT 1"), timeout=timeout)
         return "connected"

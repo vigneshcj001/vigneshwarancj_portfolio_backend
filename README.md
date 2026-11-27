@@ -54,7 +54,7 @@ For a local frontend, set its build-time `PORTFOLIO_API_URL` to `http://127.0.0.
 - `LAYA_API_KEY`: optional intent-classification credential. Without it, local routing is used.
 - `LAYA_BASE_URL`: optional Laya service origin; defaults to the configured Railway endpoint in `app/config.py`.
 - `LAYA_TIMEOUT_SECONDS`: classification timeout; defaults to `8`.
-- `DATABASE_URL`: optional PostgreSQL connection string. Configured storage creates its tables at startup; the database role needs the appropriate privileges. A configured but unreachable database can prevent startup.
+- `DATABASE_URL`: optional PostgreSQL connection string. Configured storage creates its tables (with Row Level Security enabled) at startup; the database role needs the appropriate privileges. An unreachable database does not stop startup: the API runs without storage, `/api/health` reports `unreachable`, and the connection is retried at most once a minute. For Supabase's free plan, follow [SUPABASE.md](SUPABASE.md) (use the Session pooler URL on Render).
 - `ADMIN_API_KEY`: required to use admin endpoints, supplied as `X-Admin-Key` on requests.
 - `TRUSTED_PROXY_COUNT`: number of reverse proxies that append to `X-Forwarded-For` (default `0`). **Set to `1` on Render/Railway**; otherwise every visitor shares the proxy's IP and therefore one rate-limit bucket. Left-most (client-supplied) entries are never trusted.
 - `EXTRA_ALLOWED_ORIGINS`: optional comma-separated CORS origins, e.g. `http://localhost:1234` for local frontend development.
