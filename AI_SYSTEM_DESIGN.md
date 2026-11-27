@@ -169,7 +169,7 @@ The answer-quality and end-to-end workflows need the `GROQ_API_KEY` repository s
 | Laya | Local topic rules |
 | Groq (assistant) | Readable error, with retry, for timeouts, capacity (413/429), or other failures |
 | Groq (job match) | Keyword evidence only, labelled as such |
-| PostgreSQL | Bounded in-process memory for sessions; cache falls back to process memory |
+| PostgreSQL | Startup continues without storage; bounded in-process memory for sessions and cache; reconnect retried at most once a minute via `/api/health` (see [SUPABASE.md](SUPABASE.md)) |
 | GitHub or PyPI (proof) | Stale cache, then a 5-minute backoff and a link fallback |
 | Backend asleep (résumé) | Committed static files from the same generator |
 
