@@ -1,7 +1,10 @@
 import re
 
 
-PROJECT_NAMES = {"aiora": "AIORA", "pocketpet": "PocketPet", "glycanbench": "GlycanBench", "syncly": "Syncly"}
+PROJECT_NAMES = {
+    "aiora": "AIORA", "pocketpet": "PocketPet", "glycanbench": "GlycanBench", "syncly": "Syncly",
+    "kural": "Kural", "cmo-copilot": "CMO Copilot",
+}
 
 ASPECTS = {
     "safety": r"\b(safe\w*|approv\w*|guard\w*|secur\w*|secret\w*)\b",
@@ -59,6 +62,20 @@ PROJECT_QUESTIONS = {
         ("role", "What did CJ build end to end in Syncly?"),
         ("evidence", "Is Syncly's live site available, and which source code is public?"),
         ("tour", "Walk me through Syncly's discovery, matching, chat, and portfolio flow."),
+    ],
+    "kural": [
+        ("architecture", "How does Kural share one agent engine across real-estate and hospital businesses?"),
+        ("safety", "Which guardrails make Kural escalate a call to a human?"),
+        ("role", "Why did Kural move voice calls to hosted Sarvam Voice Agents?"),
+        ("evidence", "How did Kural cut the time to first spoken audio?"),
+        ("tour", "Walk me through a Kural call from speech to tool call to reply."),
+    ],
+    "cmo-copilot": [
+        ("architecture", "How does CMO Copilot turn a marketing question into a validated query?"),
+        ("safety", "How does CMO Copilot stop the model from inventing numbers?"),
+        ("role", "Which data sources does CMO Copilot connect to?"),
+        ("evidence", "What is CMO Copilot's LangGraph pipeline?"),
+        ("tour", "Walk me through CMO Copilot from question to answer."),
     ],
 }
 

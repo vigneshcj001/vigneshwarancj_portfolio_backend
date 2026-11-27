@@ -123,6 +123,26 @@ class NewsletterTests(unittest.TestCase):
                 asyncio.run(newsletter.send("s", "text body", ["a@x.com"]))
 
 
+class ProjectDetailsRetrievalTests(unittest.TestCase):
+    def test_every_navigable_project_retrieves_its_own_knowledge_first(self):
+        from app.agent.tools import PROJECT_TARGETS, GetProjectDetailsInput, get_project_details
+        from app.ai.okf import load_bundle
+        from app.ai.presentation import PROJECT_NAMES
+
+        bodies = {entry.path: entry.body.casefold() for entry in load_bundle()}
+        for slug in PROJECT_TARGETS:
+            outcome = get_project_details(GetProjectDetailsInput(project=slug))
+            top = outcome.sources[0]["path"]
+            self.assertIn(PROJECT_NAMES[slug].casefold(), bodies[top], f"{slug}: top source {top} does not mention it")
+            self.assertEqual(outcome.actions[0].target, f"projects.{slug}")
+
+    def test_new_project_names_resolve(self):
+        from app.agent.tools import resolve_project
+
+        self.assertEqual(resolve_project("Tell me about Kural"), "kural")
+        self.assertEqual(resolve_project("What does CMO Copilot do?"), "cmo-copilot")
+
+
 class AnswerEvalScoringTests(unittest.TestCase):
     def test_fact_groups_accept_any_alternative(self):
         self.assertEqual(missing_fact_groups("Built with Tauri and Rust.", [["Tauri"], ["Rust", "Go"]]), [])

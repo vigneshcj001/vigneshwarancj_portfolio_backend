@@ -33,7 +33,7 @@ def _local_route(message: str) -> RouteDecision:
         ("experience", r"\b(experience|career|internship|current role|ceiyone)\b"),
         ("research", r"\b(research|publication|thesis|egfr)\b"),
         ("skills", r"\b(skills|competencies|proficient)\b"),
-        ("projects", r"\b(project|pocketpet|pocket pet|aiora|syncly|glycanbench|glycan bench)\b"),
+        ("projects", r"\b(project|pocketpet|pocket pet|aiora|syncly|glycanbench|glycan bench|kural|cmo copilot)\b"),
     )
     topic = next((topic for topic, pattern in topics if re.search(pattern, message, re.I)), "general")
     return RouteDecision("portfolio", topic, "local")

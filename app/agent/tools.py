@@ -70,8 +70,14 @@ PROJECT_ALIASES = {
     "glycanbench": "glycanbench",
     "glycan bench": "glycanbench",
     "syncly": "syncly",
+    "kural": "kural",
+    "voicecare": "kural",
+    "sarvam voice": "kural",
+    "cmo copilot": "cmo-copilot",
+    "cmo-copilot": "cmo-copilot",
 }
-PROJECT_TARGETS = {slug: f"projects.{slug}" for slug in ("aiora", "pocketpet", "glycanbench", "syncly")}
+PROJECT_TARGETS = {slug: f"projects.{slug}" for slug in ("aiora", "pocketpet", "glycanbench", "syncly", "kural", "cmo-copilot")}
+PROJECT_KNOWLEDGE_TOPIC = {"aiora": "experience", "kural": "experience", "cmo-copilot": "experience"}
 _FOLLOWUP_RE = re.compile(
     r"\b(it|its|this|that|these|those|architecture|technologies|safety|controls|limitations|contribution|walkthrough|deployment|features|stack|validation)\b",
     re.I,
@@ -146,7 +152,13 @@ def search_portfolio(payload: SearchPortfolioInput) -> ToolOutcome:
 
 def get_project_details(payload: GetProjectDetailsInput) -> ToolOutcome:
     slug = project_slug(payload.project)
-    result = retrieve_with_sources(f"{payload.project} architecture role result limitations", "projects", 3)
+    # Search by display name: a slug like "cmo-copilot" is one token to the
+    # retriever, while the knowledge text says "CMO Copilot".
+    name = PROJECT_NAMES.get(slug, payload.project)
+    # Employer projects are documented inside the Ceiyone experience record, not
+    # as project files, so a "projects" bias would rank unrelated projects first.
+    topic = PROJECT_KNOWLEDGE_TOPIC.get(slug, "projects")
+    result = retrieve_with_sources(f"{name} architecture role result limitations", topic, 3)
     action: tuple[UiAction, ...] = ()
     if slug:
         action = (UiAction(type="highlight", target=PROJECT_TARGETS[slug], label=f"Highlight {PROJECT_NAMES[slug]} case study"),)
