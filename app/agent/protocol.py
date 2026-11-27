@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field
 NavigationTarget = Literal[
     "home.hero", "home.projects", "about.profile", "experience.timeline",
     "projects.list", "projects.aiora", "projects.pocketpet",
-    "projects.glycanbench", "projects.syncly", "skills.grid",
+    "projects.glycanbench", "projects.syncly", "projects.kural",
+    "projects.cmo-copilot", "skills.grid",
     "publications.list", "resume.document", "contact.form",
 ]
 
